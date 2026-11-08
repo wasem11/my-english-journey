@@ -7,7 +7,7 @@ function load(api,os='ios',external=false,options={}){
   constructor(){order.push('create context');}
   resume(){assert(gesture,'Sound must be resumed during the tap, before awaiting the audio download.');order.push('resume');this.state='running';return Promise.resolve();}
   async decodeAudioData(){if(options.decodeError){const e=new Error('Invalid audio');e.name='EncodingError';throw e;}order.push('decode');return {length:22050,numberOfChannels:1};}
-  createBufferSource(){const source={buffer:null,onended:null,connect(){},disconnect(){},stop(){},start(){order.push('start');played.push('decoded Ava recording');}};sources.push(source);return source;}
+  createBufferSource(){const source={buffer:null,onended:null,connect(){},disconnect(){},stop(){},start(){order.push('start');played.push('decoded Jenny recording');}};sources.push(source);return source;}
  }
  const source=ts.transpileModule(fs.readFileSync('src/englishAudio.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  vm.runInNewContext(source,{exports,Error,process:{env:{EXPO_PUBLIC_API_URL:api}},encodeURIComponent,AbortController,setTimeout,clearTimeout,navigator:{audioSession},window:{location:{origin:'https://family.example'},AudioContext:BrowserAudioContext},require(name){
@@ -19,8 +19,8 @@ function load(api,os='ios',external=false,options={}){
  return {exports,played,fetched,order,audioSession,get accessRequests(){return accessRequests;},releaseGesture:()=>{gesture=false;},finish:()=>os==='web'?sources.at(-1).onended?.():handler?.({isLoaded:true,didJustFinish:true})};
 }
 async function main(){
- const offline=load('');await assert.rejects(offline.exports.speakEnglish('Hello.'),/Ava needs a connection/);assert.equal(offline.played.length,0);
- const online=load('https://family.example');await online.exports.speakEnglish('Hello.');assert(online.played[0].startsWith('https://family.example/api/narration?v=ava2&text='));
+ const offline=load('');await assert.rejects(offline.exports.speakEnglish('Hello.'),/Jenny needs a connection/);assert.equal(offline.played.length,0);
+ const online=load('https://family.example');await online.exports.speakEnglish('Hello.');assert(online.played[0].startsWith('https://family.example/api/narration?v=jenny-slow-v1&text='));
  const pages=load('https://family.example','web',true);const tapped=pages.exports.speakEnglish('Hello.');assert.deepEqual(pages.order,['create context','resume'],'Resume must occur synchronously, before the handler yields.');pages.releaseGesture();await tapped;assert.deepEqual(pages.order,['create context','resume','fetch','decode','start']);assert.equal(pages.played.length,1);
  assert.equal(pages.audioSession.type,'playback');await pages.exports.prepareEnglishRecording();assert.equal(pages.audioSession.type,'play-and-record','Recording must switch Safari away from playback-only before capture.');
  await pages.exports.speakEnglish('Hello again.');assert.equal(pages.audioSession.type,'playback','Listening after capture must restore media playback routing.');await pages.exports.prepareEnglishRecording();assert.equal(pages.audioSession.type,'play-and-record','Repeated Listen/Record transitions must preserve capture compatibility.');
@@ -39,6 +39,6 @@ async function main(){
  for(const os of ['ios','web']){const talking=load('https://family.example',os),events=[];await talking.exports.speakEnglish('Hello.',{onStart:()=>events.push('start'),onEnd:()=>events.push('end')});assert.deepEqual(events,['start']);talking.finish();talking.finish();assert.deepEqual(events,['start','end']);await talking.exports.speakEnglish('One.',{onStart:()=>events.push('one start'),onEnd:()=>events.push('one end')});await talking.exports.speakEnglish('Two.',{onStart:()=>events.push('two start'),onEnd:()=>events.push('two end')});await talking.exports.stopEnglishAudio();assert.deepEqual(events.slice(2),['one start','one end','two start','two end']);}
  function audit(directory){for(const entry of fs.readdirSync(directory,{withFileTypes:true})){const file=path.join(directory,entry.name);if(entry.isDirectory())audit(file);else if(/\.tsx?$/.test(file))assert(!/expo-speech|speechSynthesis|Speech\.speak/.test(fs.readFileSync(file,'utf8')),`Device voice bypass remains in ${file}`);}}
  audit('app');audit('src');
- console.log('PASS: mobile sound unlocks during the tap before fetch; sign-in and service errors stay specific; cancelled downloads stay silent; native/web speech animation and Ava-only routing remain correct.');
+ console.log('PASS: mobile sound unlocks during the tap before fetch; sign-in and service errors stay specific; cancelled downloads stay silent; native/web speech animation and Jenny-only routing remain correct.');
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

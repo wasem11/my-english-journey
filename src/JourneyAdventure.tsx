@@ -28,7 +28,6 @@ export default function JourneyAdventure({area}:{area:'english'|'social'}){
  useFocusEffect(useCallback(()=>{
   let live=true;setApproaching(null);setError('');void AsyncStorage.multiGet(['mejJourneyDoneV1',VOICE_PROGRESS_KEY,placeKey]).then(rows=>{
    if(!live)return;const data=Object.fromEntries(rows),done=masteredJourneyIds(journeyUnits,parse(data.mejJourneyDoneV1,[]),parse(data[VOICE_PROGRESS_KEY],{}));
-   if(params.auto==='1'){const next=nextAreaMission(area,done);setApproaching(next.complete?null:next.unit.id);}
    setMastered(done);setSelected(places.find(place=>place.id===(params.auto==='1'?nextAreaMission(area,done).place.id:(params.place||data[placeKey])))||nextAreaMission(area,done).place);setLoaded(true);
   }).catch(()=>{if(live){setLoaded(false);setError('Could not load your saved adventure. Go home and reopen Everyday English.');}});
   return()=>{live=false;if(approachTimer.current)clearTimeout(approachTimer.current);void stopEnglishAudio();};

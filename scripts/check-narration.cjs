@@ -8,7 +8,7 @@ async function main(){
  const env={AZURE_SPEECH_KEY:key,AZURE_SPEECH_ENDPOINT:'https://eastus.api.cognitive.microsoft.com',NARRATION_CACHE_DIR:directory};
  const server=createSpeechServer({env,fetchImpl:async(url,options)=>{
   calls++;assert.equal(url,'https://eastus.tts.speech.microsoft.com/cognitiveservices/v1');
-  assert(options.body.includes('en-US-AvaMultilingualNeural'));assert(!options.body.includes('express-as'));assert(options.body.includes('rate="-2%"'));
+  assert(options.body.includes('en-US-JennyNeural'));assert(!options.body.includes('express-as'));assert(options.body.includes('rate="-18%"'));
   assert(!options.body.includes('fa-IR'));return {ok:true,arrayBuffer:async()=>Buffer.alloc(256,1)};
  }});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
@@ -27,7 +27,7 @@ async function main(){
   await fs.writeFile(path.join(directory,'monthly-usage.json'),JSON.stringify({month:new Date().toISOString().slice(0,7),characters:400000}));
   assert.equal((await fetch(base+'/api/narration?text='+encodeURIComponent(unit.prompt))).status,429);
   assert.equal(calls,2);assert.equal((await fetch(uri)).status,200,'cached audio remains usable at quota');
-  console.log('PASS: Ava neural voice for English and DMV, trusted content only, parallel deduplication, cached replay, and persistent monthly generation cap. Provider audio was a test fixture.');
+  console.log('PASS: Jenny neural voice for English and DMV, trusted content only, parallel deduplication, cached replay, and persistent monthly generation cap. Provider audio was a test fixture.');
  }finally{await new Promise(r=>server.close(r));for(const file of await fs.readdir(directory))await fs.unlink(path.join(directory,file));await fs.rmdir(directory);}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

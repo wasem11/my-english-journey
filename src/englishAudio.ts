@@ -60,9 +60,9 @@ export async function speakEnglish(text:string,hooks:PlaybackHooks={}){
  try{
   const audioContext=ready?await ready:null;
   await stopping;if(attempt!==generation)return;
-  if(!API)throw new PlaybackError('Ava needs a connection to the voice service. Please open the online app and try again.');
+  if(!API)throw new PlaybackError('Jenny needs a connection to the voice service. Please open the online app and try again.');
   playbackEnded=ended;
-  const path=`/api/narration?v=ava2&text=${encodeURIComponent(text)}`;
+  const path=`/api/narration?v=jenny-slow-v1&text=${encodeURIComponent(text)}`;
   if(Platform.OS==='web'&&audioContext){
    if(EXTERNAL_WEB_API&&!hasFamilySession()){requestVoiceAccess();throw new PlaybackError('Enter your family code in Connect voice, then tap Listen again.');}
    let audio=recordings.get(path);

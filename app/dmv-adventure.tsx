@@ -228,7 +228,7 @@ export default function DmvAdventure() {
   </View>
   <ScrollView ref={scroll} style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, width: '100%' }}>
    {!regionUnlocked && !regionComplete && <View style={s.mapNotice}>{b('Preview: complete earlier levels to unlock this region.', 'برای باز کردن این منطقه، سطح‌های قبلی را تکمیل کنید.', 'small')}</View>}
-   <RewardEstimate area="driving" compact refreshKey={JSON.stringify(rewardScores)}/><AdventureTrail fullScreen initialIndex={departed} onArrive={()=>{if(departed!==undefined&&!allDone){setDeparted(undefined);start(Math.min(nextIndex,adventureLevels.length-1));}}} onFocusPoint={focusMap} region={region} completed={completed} currentIndex={Math.min(nextIndex, adventureLevels.length - 1)} onStart={start} translated={translated}/>
+   <RewardEstimate area="driving" compact refreshKey={JSON.stringify(rewardScores)}/><AdventureTrail fullScreen initialIndex={departed} onArrive={()=>setDeparted(undefined)} onFocusPoint={focusMap} region={region} completed={completed} currentIndex={Math.min(nextIndex, adventureLevels.length - 1)} onStart={start} translated={translated}/>
   </ScrollView>
  </View>;
     return <View style={[s.root, { paddingLeft: insets.left, paddingRight: insets.right }]}><ScrollView ref={scroll} style={{ flex: 1 }} contentContainerStyle={[s.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24, paddingHorizontal: compact ? 12 : 16 }]}>

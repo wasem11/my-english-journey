@@ -34,4 +34,4 @@ for(const lesson of journeyUnits){
  }
  assert(positions.size>1,`Answer position never varies: ${lesson.id}`);assert(phrases.size>1,`Listening reply never varies: ${lesson.id}`);
 }
-console.log('PASS: all lessons listen first, choose second, speak third; distinct randomized listening replies and positions have authorized Ava audio.');
+console.log('PASS: all lessons listen first, choose second, speak third; distinct randomized listening replies and positions have authorized Jenny audio.');
