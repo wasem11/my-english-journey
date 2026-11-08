@@ -32,6 +32,7 @@ jobs:
       - run: node scripts/check-narration.cjs
       - run: node scripts/check-microphone.cjs
       - run: node scripts/check-rewards.cjs
+      - run: node scripts/check-visit-streak.cjs
       - run: npm run build:pages
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

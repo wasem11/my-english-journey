@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+process.env.TZ='America/Los_Angeles';
+require('../server/speech-server.cjs');
+const {recordVisit,visitMessage}=require('../src/visitStreak.ts');
+const day=value=>new Date(value+'T12:00:00');
+let streak=recordVisit(null,day('2026-11-07'));assert.deepEqual(streak,{lastDay:'2026-11-07',count:1});
+assert.deepEqual(recordVisit(streak,day('2026-11-07')),streak,'Repeated openings must not increase the streak.');
+streak=recordVisit(streak,day('2026-11-08'));assert.equal(streak.count,2,'Consecutive local dates increase the streak.');
+assert.equal(visitMessage(streak).title,'2 days in a row!');
+assert.equal(recordVisit(streak,day('2026-11-10')).count,1,'Missing a day resets the visit streak.');
+for(const invalid of [null,[],{},'broken',{lastDay:'2026-11-07',count:-2},{lastDay:'2026-11-07',count:NaN}])assert.equal(recordVisit(invalid,day('2026-11-08')).count,1);
+for(const [previous,today] of [['2026-12-31','2027-01-01'],['2028-02-29','2028-03-01'],['2026-03-07','2026-03-08'],['2026-10-31','2026-11-01']])assert.equal(recordVisit({lastDay:previous,count:4},day(today)).count,5);
+assert.notEqual(visitMessage({lastDay:'2026-11-08',count:2}).message,visitMessage({lastDay:'2026-11-09',count:3}).message);
+assert(visitMessage({lastDay:'2026-11-08',count:7}).message.includes('1 week'));
+console.log('PASS: visit streak uses local calendar dates, counts once daily, resets after missed days, handles DST/year/leap boundaries, and varies encouragement.');
