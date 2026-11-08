@@ -20,7 +20,7 @@ function load(api,os='ios',external=false,options={}){
 }
 async function main(){
  const offline=load('');await assert.rejects(offline.exports.speakEnglish('Hello.'),/Jenny needs a connection/);assert.equal(offline.played.length,0);
- const online=load('https://family.example');await online.exports.speakEnglish('Hello.');assert(online.played[0].startsWith('https://family.example/api/narration?v=jenny-slow-v1&text='));
+ const online=load('https://family.example');await online.exports.speakEnglish('Hello.');assert(online.played[0].startsWith('https://family.example/api/narration?v=jenny-slow-v2&text='));
  const pages=load('https://family.example','web',true);const tapped=pages.exports.speakEnglish('Hello.');assert.deepEqual(pages.order,['create context','resume'],'Resume must occur synchronously, before the handler yields.');pages.releaseGesture();await tapped;assert.deepEqual(pages.order,['create context','resume','fetch','decode','start']);assert.equal(pages.played.length,1);
  assert.equal(pages.audioSession.type,'playback');await pages.exports.prepareEnglishRecording();assert.equal(pages.audioSession.type,'play-and-record','Recording must switch Safari away from playback-only before capture.');
  await pages.exports.speakEnglish('Hello again.');assert.equal(pages.audioSession.type,'playback','Listening after capture must restore media playback routing.');await pages.exports.prepareEnglishRecording();assert.equal(pages.audioSession.type,'play-and-record','Repeated Listen/Record transitions must preserve capture compatibility.');

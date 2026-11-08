@@ -17,7 +17,7 @@ function createNarration({env,fetchImpl,texts}){
   const text=url.searchParams.get('text');
   if(!text||!allowed.has(text)){fail(400,'Choose a lesson example to hear.');return true;}
   if(!key||!endpoint){fail(503,'Natural voice playback is not connected.');return true;}
-  const id=crypto.createHash('sha256').update(VOICE+'-slow-v1:'+text).digest('hex'),file=path.join(directory,id+'.mp3');
+  const id=crypto.createHash('sha256').update(VOICE+'-slow-v2:'+text).digest('hex'),file=path.join(directory,id+'.mp3');
   try{
    if(!fs.existsSync(file)){
     if(!inflight.has(id)){
@@ -25,7 +25,7 @@ function createNarration({env,fetchImpl,texts}){
       const now=Date.now();while(recent.length&&recent[0]<now-60000)recent.shift();
       if(recent.length>=10){const error=new Error('Please wait a moment, then tap Listen again.');error.status=429;throw error;}
       recent.push(now);fs.mkdirSync(directory,{recursive:true});
-      const ssml=`<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="${VOICE}"><prosody rate="-18%">${escapeXml(text)}</prosody></voice></speak>`;
+      const ssml=`<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="${VOICE}"><prosody rate="-35%">${escapeXml(text)}</prosody></voice></speak>`;
       const budgetFile=path.join(directory,'monthly-usage.json'),month=new Date().toISOString().slice(0,7);
       let budget={month,characters:0};
       try{const saved=JSON.parse(fs.readFileSync(budgetFile,'utf8'));if(saved.month===month){if(!Number.isInteger(saved.characters)||saved.characters<0)throw new Error('Invalid narration counter');budget=saved;}}catch(error){if(error.code!=='ENOENT')throw error;}

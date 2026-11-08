@@ -8,7 +8,7 @@ async function main(){
  const env={AZURE_SPEECH_KEY:key,AZURE_SPEECH_ENDPOINT:'https://eastus.api.cognitive.microsoft.com',NARRATION_CACHE_DIR:directory};
  const server=createSpeechServer({env,fetchImpl:async(url,options)=>{
   calls++;assert.equal(url,'https://eastus.tts.speech.microsoft.com/cognitiveservices/v1');
-  assert(options.body.includes('en-US-JennyNeural'));assert(!options.body.includes('express-as'));assert(options.body.includes('rate="-18%"'));
+  assert(options.body.includes('en-US-JennyNeural'));assert(!options.body.includes('express-as'));assert(options.body.includes('rate="-35%"'));
   assert(!options.body.includes('fa-IR'));return {ok:true,arrayBuffer:async()=>Buffer.alloc(256,1)};
  }});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;

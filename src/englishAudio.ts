@@ -62,7 +62,7 @@ export async function speakEnglish(text:string,hooks:PlaybackHooks={}){
   await stopping;if(attempt!==generation)return;
   if(!API)throw new PlaybackError('Jenny needs a connection to the voice service. Please open the online app and try again.');
   playbackEnded=ended;
-  const path=`/api/narration?v=jenny-slow-v1&text=${encodeURIComponent(text)}`;
+  const path=`/api/narration?v=jenny-slow-v2&text=${encodeURIComponent(text)}`;
   if(Platform.OS==='web'&&audioContext){
    if(EXTERNAL_WEB_API&&!hasFamilySession()){requestVoiceAccess();throw new PlaybackError('Enter your family code in Connect voice, then tap Listen again.');}
    let audio=recordings.get(path);

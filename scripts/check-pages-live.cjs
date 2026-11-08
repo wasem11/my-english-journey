@@ -14,7 +14,7 @@ async function main(){
  const login=await request(api+'/api/mobile-session',{method:'POST',headers:{Origin:origin},body:new URLSearchParams({code:settings.FAMILY_ACCESS_CODE})});assert.equal(login.status,200);const session=await login.json();
  const headers={Origin:origin,Authorization:'Bearer '+session.token};
  const status=await request(api+'/api/speech-status',{headers}).then(r=>r.json());assert.equal(status.target,90);assert.equal(status.ready,true);
- const audio=await request(api+'/api/narration?v=jenny-slow-v1&text='+encodeURIComponent('Could I have the receipt, please?'),{headers});assert.equal(audio.status,200);assert.equal(audio.headers.get('access-control-allow-origin'),origin);assert.equal(audio.headers.get('x-narration-voice'),'en-US-JennyNeural');assert((await audio.arrayBuffer()).byteLength>500);
+ const audio=await request(api+'/api/narration?v=jenny-slow-v2&text='+encodeURIComponent('Could I have the receipt, please?'),{headers});assert.equal(audio.status,200);assert.equal(audio.headers.get('access-control-allow-origin'),origin);assert.equal(audio.headers.get('x-narration-voice'),'en-US-JennyNeural');assert((await audio.arrayBuffer()).byteLength>500);
  console.log('PASS: Pages-origin preflight, protected voice access, family sign-in, 90% target, and actual Jenny narration.');
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1;});
