@@ -40,7 +40,7 @@ export default function EnglishLevelGame(p:Props){
   return()=>clearTimeout(timer);
  },[activity,listenDone,quizDone]);
  useEffect(()=>{if(!p.finished)return;const timer=setTimeout(p.onAdvance,1000);return()=>clearTimeout(timer);},[p.finished,p.onAdvance]);
- const arrived=useCallback(()=>{if(travelling){setActivity(travelling);setTravelling(null);}},[travelling]);
+ const arrived=useCallback(()=>{if(travelling){if(travelling!=='speak')setActivity(travelling);setTravelling(null);}},[travelling]);
  const choices=p.listeningExercise.choices;
  return <View style={[s.root,{backgroundColor:env.ground,paddingLeft:insets.left,paddingRight:insets.right}]}>
   <View style={[s.hud,{paddingTop:insets.top+8}]}><TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to world map" onPress={p.onClose} style={s.iconButton}><Ionicons name="close" size={24} color="white"/></TouchableOpacity><View style={{flex:1}}><Text style={s.kicker}>LEVEL {level} · {env.name.toUpperCase()}</Text><Text numberOfLines={2} style={s.levelTitle}>{unit.title}</Text></View><TouchableOpacity accessibilityRole="button" accessibilityLabel={p.translated?'Hide Afghan Dari':'Translate to Afghan Dari'} onPress={p.toggleDari} style={s.iconButton}><Ionicons name="language-outline" size={23} color="white"/></TouchableOpacity></View>
