@@ -39,7 +39,6 @@ export default function EnglishLevelGame(p:Props){
   const timer=setTimeout(()=>{setTravelling(destination);close();},1100);
   return()=>clearTimeout(timer);
  },[activity,listenDone,quizDone]);
- useEffect(()=>{if(activity==='speak'&&speakingPassed&&!p.finished&&!p.saving&&!p.saveError)p.onComplete();},[activity,speakingPassed,p.finished,p.saving,p.saveError]);
  useEffect(()=>{if(!p.finished)return;const timer=setTimeout(p.onAdvance,1000);return()=>clearTimeout(timer);},[p.finished,p.onAdvance]);
  const arrived=useCallback(()=>{if(travelling){setActivity(travelling);setTravelling(null);}},[travelling]);
  const choices=p.listeningExercise.choices;
@@ -68,9 +67,9 @@ export default function EnglishLevelGame(p:Props){
      {social&&<ConversationStage unit={unit} translated={p.translated} mode="speak" playerSpeaking={playerSpeaking}/>}
      {unit.dialogue&&<><TouchableOpacity accessibilityRole="button" disabled={playerSpeaking} onPress={()=>setConversation(value=>!value)} style={s.audio}><Ionicons name="chatbubbles-outline" size={21} color={theme.green}/><Text style={s.audioText}>{conversation?'Hide practice conversation':'Practice a short conversation first'}</Text></TouchableOpacity>{conversation&&!playerSpeaking&&<FamilyConversation unit={unit} translated={p.translated} onSpeak={p.say}/>}</>}
      <VoiceChallenge unit={unit} translated={p.translated} onAssessment={p.onAssessment} onSpeakingChange={setPlayerSpeaking}/>
-     {speakingPassed&&<View style={s.feedback}><Text style={s.feedbackTitle}>Speaking target reached!</Text><Text style={s.body}>{voice!.score}% on your saved voice assessment. You can finish this level now.</Text></View>}
+     {speakingPassed&&<View style={s.feedback}><Text style={s.feedbackTitle}>Speaking target reached!</Text><Text style={s.body}>{voice!.score}% on your voice assessment. Review your score, then tap Next to save this level.</Text></View>}
      {!!p.saveError&&<Text accessibilityRole="alert" style={s.error}>{p.saveError}</Text>}
-     <TouchableOpacity accessibilityRole="button" disabled={!speakingPassed||p.saving} onPress={p.onComplete} style={[s.action,(!speakingPassed||p.saving)&&{opacity:.45}]}><Text style={s.actionText}>{p.saving?'Saving level...':speakingPassed?'Finish level & save progress':`Reach ${VOICE_TARGET}% to finish this level`}</Text></TouchableOpacity>
+     <TouchableOpacity accessibilityRole="button" disabled={!speakingPassed||p.saving} onPress={p.onComplete} style={[s.action,(!speakingPassed||p.saving)&&{opacity:.45}]}><Text style={s.actionText}>{p.saving?'Saving level...':speakingPassed?'Next':`Reach ${VOICE_TARGET}% to finish this level`}</Text></TouchableOpacity>
     </>:null}
    </ScrollView>
   </View></View></Modal>
