@@ -1,0 +1,20 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "production": {
+      "distribution": "store",
+      "autoIncrement": true,
+      "env": {
+        "EXPO_NO_DOTENV": "1",
+        "EXPO_PUBLIC_API_URL": "https://myenglishjourney-family-1105.azurewebsites.net"
+      },
+      "channel": "production"
+    }
+  },
+  "submit": {
+    "production": {"ios":{"ascAppId":"6832049878"}}
+  }
+}

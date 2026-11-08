@@ -1,0 +1,720 @@
+[
+  {
+    "id": "m1",
+    "title": "The STOP sign",
+    "dari": "علامت ایست",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m1-sign",
+        "prompt": "What does this road sign mean?",
+        "promptDari": "این علامت سرک چه معنی دارد؟",
+        "choices": [
+          {
+            "en": "Stop completely",
+            "dari": "کاملاً توقف کنید"
+          },
+          {
+            "en": "Slow down only",
+            "dari": "فقط سرعت را کم کنید"
+          },
+          {
+            "en": "Keep driving",
+            "dari": "به رانندگی ادامه بدهید"
+          }
+        ],
+        "correct": 0,
+        "why": "Stop at the limit line or before the crosswalk. Check before proceeding.",
+        "whyDari": "در خط توقف یا پیش از خط عبور پیاده‌رو ایستاد شوید. پیش از حرکت راه را بررسی کنید.",
+        "sign": "stop"
+      },
+      {
+        "id": "m1-scenario",
+        "prompt": "You reach a stop sign with no other cars nearby. What should you do?",
+        "promptDari": "به علامت ایست می‌رسید و موتر دیگری نیست. چه باید کنید؟",
+        "choices": [
+          {
+            "en": "Stop fully before proceeding",
+            "dari": "پیش از حرکت کاملاً توقف کنید"
+          },
+          {
+            "en": "Roll through slowly",
+            "dari": "بدون توقف کامل آهسته بگذرید"
+          }
+        ],
+        "correct": 0,
+        "why": "Stop at the limit line or before the crosswalk. Check before proceeding.",
+        "whyDari": "در خط توقف یا پیش از خط عبور پیاده‌رو ایستاد شوید. پیش از حرکت راه را بررسی کنید."
+      },
+      {
+        "id": "m1-review",
+        "prompt": "You reach the STOP sign shown above. What must you do?",
+        "promptDari": "به علامت ایست که در بالا نشان داده شده می‌رسید. چه باید کنید؟",
+        "choices": [
+          {
+            "en": "Stop completely",
+            "dari": "کاملاً توقف کنید"
+          },
+          {
+            "en": "Slow down only",
+            "dari": "فقط سرعت را کم کنید"
+          },
+          {
+            "en": "Keep driving",
+            "dari": "به رانندگی ادامه بدهید"
+          }
+        ],
+        "correct": 0,
+        "why": "Stop at the limit line or before the crosswalk. Check before proceeding.",
+        "whyDari": "در خط توقف یا پیش از خط عبور پیاده‌رو ایستاد شوید. پیش از حرکت راه را بررسی کنید.",
+        "sign": "stop"
+      }
+    ]
+  },
+  {
+    "id": "m2",
+    "title": "Yield safely",
+    "dari": "حق تقدم",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m2-sign",
+        "prompt": "Choose the meaning of this sign.",
+        "promptDari": "معنی این علامت را انتخاب کنید.",
+        "choices": [
+          {
+            "en": "You always go first",
+            "dari": "همیشه شما اول می‌روید"
+          },
+          {
+            "en": "Give the right-of-way; stop if needed",
+            "dari": "حق تقدم بدهید؛ اگر ضرورت باشد توقف کنید"
+          },
+          {
+            "en": "No stopping",
+            "dari": "توقف ممنوع است"
+          }
+        ],
+        "correct": 1,
+        "why": "Yield to traffic and pedestrians who have the right-of-way.",
+        "whyDari": "به موترها و عابران پیاده که حق تقدم دارند راه بدهید.",
+        "sign": "yield"
+      },
+      {
+        "id": "m2-scenario",
+        "prompt": "Another car is already in the intersection. What is safest?",
+        "promptDari": "موتر دیگری در چهارراه است. چه کار مصون‌تر است؟",
+        "choices": [
+          {
+            "en": "Yield until the intersection is clear",
+            "dari": "تا خالی شدن چهارراه حق تقدم بدهید"
+          },
+          {
+            "en": "Accelerate to enter first",
+            "dari": "سرعت بگیرید تا اول داخل شوید"
+          }
+        ],
+        "correct": 0,
+        "why": "Yield to traffic and pedestrians who have the right-of-way.",
+        "whyDari": "به موترها و عابران پیاده که حق تقدم دارند راه بدهید."
+      },
+      {
+        "id": "m2-review",
+        "prompt": "You reach the YIELD sign shown above. What should you do?",
+        "promptDari": "به علامت حق تقدم که در بالا نشان داده شده می‌رسید. چه باید کنید؟",
+        "choices": [
+          {
+            "en": "You always go first",
+            "dari": "همیشه شما اول می‌روید"
+          },
+          {
+            "en": "Give the right-of-way; stop if needed",
+            "dari": "حق تقدم بدهید؛ اگر ضرورت باشد توقف کنید"
+          },
+          {
+            "en": "No stopping",
+            "dari": "توقف ممنوع است"
+          }
+        ],
+        "correct": 1,
+        "why": "Yield to traffic and pedestrians who have the right-of-way.",
+        "whyDari": "به موترها و عابران پیاده که حق تقدم دارند راه بدهید.",
+        "sign": "yield"
+      }
+    ]
+  },
+  {
+    "id": "m3",
+    "title": "Speed limits",
+    "dari": "حد سرعت",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m3-sign",
+        "prompt": "What does this sign tell drivers?",
+        "promptDari": "این علامت به رانندگان چه می‌گوید؟",
+        "choices": [
+          {
+            "en": "Minimum speed is 50 mph",
+            "dari": "کمترین سرعت ۵۰ مایل در ساعت است"
+          },
+          {
+            "en": "Maximum posted speed is 50 mph",
+            "dari": "بیشترین سرعت تعیین‌شده ۵۰ مایل در ساعت است"
+          },
+          {
+            "en": "Drive 50 mph in all weather",
+            "dari": "در هر نوع هوا با سرعت ۵۰ رانندگی کنید"
+          }
+        ],
+        "correct": 1,
+        "why": "The posted speed is a maximum under ideal conditions. Slow down when necessary.",
+        "whyDari": "سرعت نوشته‌شده در شرایط مناسب حد اعظمی است. در صورت ضرورت آهسته‌تر بروید.",
+        "sign": "speed-limit-50"
+      },
+      {
+        "id": "m3-scenario",
+        "prompt": "The sign says 50 mph but heavy rain reduces visibility. What now?",
+        "promptDari": "علامت ۵۰ مایل است اما باران شدید دید را کم کرده. چه می‌کنید؟",
+        "choices": [
+          {
+            "en": "Slow to a safe speed for conditions",
+            "dari": "مطابق شرایط سرعت را به حد مصون کم کنید"
+          },
+          {
+            "en": "Always drive exactly 50 mph",
+            "dari": "همیشه دقیقاً ۵۰ مایل رانندگی کنید"
+          }
+        ],
+        "correct": 0,
+        "why": "The posted speed is a maximum under ideal conditions. Slow down when necessary.",
+        "whyDari": "سرعت نوشته‌شده در شرایط مناسب حد اعظمی است. در صورت ضرورت آهسته‌تر بروید."
+      },
+      {
+        "id": "m3-review",
+        "prompt": "The sign above says SPEED LIMIT 50. What does the number 50 mean?",
+        "promptDari": "علامت بالا حد سرعت ۵۰ را نشان می‌دهد. عدد ۵۰ چه معنی دارد؟",
+        "choices": [
+          {
+            "en": "Minimum speed is 50 mph",
+            "dari": "کمترین سرعت ۵۰ مایل در ساعت است"
+          },
+          {
+            "en": "Maximum posted speed is 50 mph",
+            "dari": "بیشترین سرعت تعیین‌شده ۵۰ مایل در ساعت است"
+          },
+          {
+            "en": "Drive 50 mph in all weather",
+            "dari": "در هر نوع هوا با سرعت ۵۰ رانندگی کنید"
+          }
+        ],
+        "correct": 1,
+        "why": "The posted speed is a maximum under ideal conditions. Slow down when necessary.",
+        "whyDari": "سرعت نوشته‌شده در شرایط مناسب حد اعظمی است. در صورت ضرورت آهسته‌تر بروید.",
+        "sign": "speed-limit-50"
+      }
+    ]
+  },
+  {
+    "id": "m4",
+    "title": "Turn restrictions",
+    "dari": "محدودیت پیچیدن",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m4-sign",
+        "prompt": "What action is prohibited?",
+        "promptDari": "کدام حرکت ممنوع است؟",
+        "choices": [
+          {
+            "en": "Turning right",
+            "dari": "پیچیدن به راست"
+          },
+          {
+            "en": "Turning left",
+            "dari": "پیچیدن به چپ"
+          },
+          {
+            "en": "Driving straight",
+            "dari": "مستقیم رفتن"
+          }
+        ],
+        "correct": 0,
+        "why": "Do not turn right where this sign is posted.",
+        "whyDari": "در جایی که این علامت نصب است، به راست نپیچید.",
+        "sign": "no-right-turn"
+      },
+      {
+        "id": "m4-scenario",
+        "prompt": "Your navigation asks you to turn right at a No Right Turn sign. What now?",
+        "promptDari": "نقشه می‌گوید راست بپیچید اما علامت ممنوع است. چه می‌کنید؟",
+        "choices": [
+          {
+            "en": "Continue and find a legal turn",
+            "dari": "ادامه دهید و راه قانونی پیدا کنید"
+          },
+          {
+            "en": "Turn right because the app said so",
+            "dari": "چون نقشه گفت راست بپیچید"
+          }
+        ],
+        "correct": 0,
+        "why": "Do not turn right where this sign is posted.",
+        "whyDari": "در جایی که این علامت نصب است، به راست نپیچید."
+      },
+      {
+        "id": "m4-review",
+        "prompt": "Look at the sign above. Which turn is not allowed here?",
+        "promptDari": "به علامت بالا نگاه کنید. کدام پیچیدن در اینجا اجازه نیست؟",
+        "choices": [
+          {
+            "en": "Turning right",
+            "dari": "پیچیدن به راست"
+          },
+          {
+            "en": "Turning left",
+            "dari": "پیچیدن به چپ"
+          },
+          {
+            "en": "Driving straight",
+            "dari": "مستقیم رفتن"
+          }
+        ],
+        "correct": 0,
+        "why": "Do not turn right where this sign is posted.",
+        "whyDari": "در جایی که این علامت نصب است، به راست نپیچید.",
+        "sign": "no-right-turn"
+      }
+    ]
+  },
+  {
+    "id": "m5",
+    "title": "No U-turn",
+    "dari": "دور زدن ممنوع",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m5-sign",
+        "prompt": "Which maneuver does this sign forbid?",
+        "promptDari": "این علامت کدام حرکت را ممنوع می‌کند؟",
+        "choices": [
+          {
+            "en": "A U-turn",
+            "dari": "دور زدن"
+          },
+          {
+            "en": "Stopping for pedestrians",
+            "dari": "توقف برای عابران پیاده"
+          },
+          {
+            "en": "Going straight",
+            "dari": "مستقیم رفتن"
+          }
+        ],
+        "correct": 0,
+        "why": "A U-turn is not allowed at this location.",
+        "whyDari": "در این محل دور زدن اجازه نیست.",
+        "sign": "no-u-turn"
+      },
+      {
+        "id": "m5-scenario",
+        "prompt": "You missed your destination and see a No U-turn sign. What is safest?",
+        "promptDari": "از مقصد گذشتید و علامت دور زدن ممنوع است. چه می‌کنید؟",
+        "choices": [
+          {
+            "en": "Continue to a place where turning is legal",
+            "dari": "تا محل مجاز ادامه دهید"
+          },
+          {
+            "en": "Make a quick U-turn anyway",
+            "dari": "با این حال فوری دور بزنید"
+          }
+        ],
+        "correct": 0,
+        "why": "A U-turn is not allowed at this location.",
+        "whyDari": "در این محل دور زدن اجازه نیست."
+      },
+      {
+        "id": "m5-review",
+        "prompt": "Look at the NO U-TURN sign above. Which action is not allowed?",
+        "promptDari": "به علامت دور زدن ممنوع در بالا نگاه کنید. کدام حرکت اجازه نیست؟",
+        "choices": [
+          {
+            "en": "A U-turn",
+            "dari": "دور زدن"
+          },
+          {
+            "en": "Stopping for pedestrians",
+            "dari": "توقف برای عابران پیاده"
+          },
+          {
+            "en": "Going straight",
+            "dari": "مستقیم رفتن"
+          }
+        ],
+        "correct": 0,
+        "why": "A U-turn is not allowed at this location.",
+        "whyDari": "در این محل دور زدن اجازه نیست.",
+        "sign": "no-u-turn"
+      }
+    ]
+  },
+  {
+    "id": "m6",
+    "title": "Wrong entrance",
+    "dari": "ورود ممنوع",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m6-sign",
+        "prompt": "What should you do when you see this sign facing you?",
+        "promptDari": "وقتی این علامت رو به شما باشد چه باید کنید؟",
+        "choices": [
+          {
+            "en": "Enter carefully",
+            "dari": "با احتیاط داخل شوید"
+          },
+          {
+            "en": "Do not enter",
+            "dari": "داخل نشوید"
+          },
+          {
+            "en": "Speed up",
+            "dari": "سرعت را زیاد کنید"
+          }
+        ],
+        "correct": 1,
+        "why": "This sign marks an entrance you must not use.",
+        "whyDari": "این علامت ورودی را نشان می‌دهد که نباید از آن داخل شوید.",
+        "sign": "do-not-enter"
+      },
+      {
+        "id": "m6-scenario",
+        "prompt": "A driveway has a DO NOT ENTER sign. What should you do?",
+        "promptDari": "در ورودی علامت ورود ممنوع است. چه می‌کنید؟",
+        "choices": [
+          {
+            "en": "Find the correct entrance",
+            "dari": "ورودی درست را پیدا کنید"
+          },
+          {
+            "en": "Enter if the road seems empty",
+            "dari": "اگر سرک خالی بود داخل شوید"
+          }
+        ],
+        "correct": 0,
+        "why": "This sign marks an entrance you must not use.",
+        "whyDari": "این علامت ورودی را نشان می‌دهد که نباید از آن داخل شوید."
+      },
+      {
+        "id": "m6-review",
+        "prompt": "The DO NOT ENTER sign above faces your vehicle. What must you do?",
+        "promptDari": "علامت ورود ممنوع در بالا رو به موتر شما است. چه باید کنید؟",
+        "choices": [
+          {
+            "en": "Enter carefully",
+            "dari": "با احتیاط داخل شوید"
+          },
+          {
+            "en": "Do not enter",
+            "dari": "داخل نشوید"
+          },
+          {
+            "en": "Speed up",
+            "dari": "سرعت را زیاد کنید"
+          }
+        ],
+        "correct": 1,
+        "why": "This sign marks an entrance you must not use.",
+        "whyDari": "این علامت ورودی را نشان می‌دهد که نباید از آن داخل شوید.",
+        "sign": "do-not-enter"
+      }
+    ]
+  },
+  {
+    "id": "m7",
+    "title": "Wrong way",
+    "dari": "راه اشتباه",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m7-sign",
+        "prompt": "What does this sign warn you?",
+        "promptDari": "این علامت به شما دربارهٔ چه هشدار می‌دهد؟",
+        "choices": [
+          {
+            "en": "You are traveling in the wrong direction",
+            "dari": "شما در جهت اشتباه حرکت می‌کنید"
+          },
+          {
+            "en": "The road is one mile long",
+            "dari": "طول سرک یک مایل است"
+          },
+          {
+            "en": "You have the right-of-way",
+            "dari": "شما حق تقدم دارید"
+          }
+        ],
+        "correct": 0,
+        "why": "Do not continue against the direction of traffic. Find a safe way to correct your route.",
+        "whyDari": "برخلاف جهت ترافیک ادامه ندهید. به شکل مصون مسیر خود را اصلاح کنید.",
+        "sign": "wrong-way"
+      },
+      {
+        "id": "m7-scenario",
+        "prompt": "You see a WRONG WAY sign facing your car. What is safest?",
+        "promptDari": "علامت راه اشتباه رو به موتر شماست. چه می‌کنید؟",
+        "choices": [
+          {
+            "en": "Stop safely and correct direction without continuing",
+            "dari": "به طور مصون توقف و مسیر را اصلاح کنید"
+          },
+          {
+            "en": "Keep going until the next light",
+            "dari": "تا چراغ بعدی ادامه دهید"
+          }
+        ],
+        "correct": 0,
+        "why": "Do not continue against the direction of traffic. Find a safe way to correct your route.",
+        "whyDari": "برخلاف جهت ترافیک ادامه ندهید. به شکل مصون مسیر خود را اصلاح کنید."
+      },
+      {
+        "id": "m7-review",
+        "prompt": "You see the WRONG WAY sign above facing you. What does it mean?",
+        "promptDari": "علامت راه اشتباه در بالا رو به شما است. چه معنی دارد؟",
+        "choices": [
+          {
+            "en": "You are traveling in the wrong direction",
+            "dari": "شما در جهت اشتباه حرکت می‌کنید"
+          },
+          {
+            "en": "The road is one mile long",
+            "dari": "طول سرک یک مایل است"
+          },
+          {
+            "en": "You have the right-of-way",
+            "dari": "شما حق تقدم دارید"
+          }
+        ],
+        "correct": 0,
+        "why": "Do not continue against the direction of traffic. Find a safe way to correct your route.",
+        "whyDari": "برخلاف جهت ترافیک ادامه ندهید. به شکل مصون مسیر خود را اصلاح کنید.",
+        "sign": "wrong-way"
+      }
+    ]
+  },
+  {
+    "id": "m8",
+    "title": "One-way street",
+    "dari": "سرک یک‌طرفه",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m8-sign",
+        "prompt": "What does this sign indicate?",
+        "promptDari": "این علامت چه چیزی را نشان می‌دهد؟",
+        "choices": [
+          {
+            "en": "Traffic goes in the indicated direction",
+            "dari": "ترافیک در جهت نشان‌داده‌شده حرکت می‌کند"
+          },
+          {
+            "en": "Two-way traffic",
+            "dari": "ترافیک دوطرفه"
+          },
+          {
+            "en": "Parking is allowed anywhere",
+            "dari": "پارک در همه‌جا اجازه است"
+          }
+        ],
+        "correct": 0,
+        "why": "Follow the direction indicated by the one-way sign.",
+        "whyDari": "جهتی را که علامت یک‌طرفه نشان می‌دهد دنبال کنید.",
+        "sign": "one-way"
+      },
+      {
+        "id": "m8-scenario",
+        "prompt": "A one-way arrow points left. Which direction may traffic go?",
+        "promptDari": "فلش یک‌طرفه به چپ است. ترافیک کدام طرف می‌رود؟",
+        "choices": [
+          {
+            "en": "Left, in the indicated direction",
+            "dari": "به چپ، در جهت نشان داده شده"
+          },
+          {
+            "en": "Either direction",
+            "dari": "هر دو جهت"
+          }
+        ],
+        "correct": 0,
+        "why": "Follow the direction indicated by the one-way sign.",
+        "whyDari": "جهتی را که علامت یک‌طرفه نشان می‌دهد دنبال کنید."
+      },
+      {
+        "id": "m8-review",
+        "prompt": "Look at the ONE WAY sign above. What does its arrow tell you?",
+        "promptDari": "به علامت سرک یک‌طرفه در بالا نگاه کنید. فلش آن چه چیزی را نشان می‌دهد؟",
+        "choices": [
+          {
+            "en": "Traffic goes in the indicated direction",
+            "dari": "ترافیک در جهت نشان‌داده‌شده حرکت می‌کند"
+          },
+          {
+            "en": "Two-way traffic",
+            "dari": "ترافیک دوطرفه"
+          },
+          {
+            "en": "Parking is allowed anywhere",
+            "dari": "پارک در همه‌جا اجازه است"
+          }
+        ],
+        "correct": 0,
+        "why": "Follow the direction indicated by the one-way sign.",
+        "whyDari": "جهتی را که علامت یک‌طرفه نشان می‌دهد دنبال کنید.",
+        "sign": "one-way"
+      }
+    ]
+  },
+  {
+    "id": "m9",
+    "title": "School crossing",
+    "dari": "عبور شاگردان مکتب",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m9-sign",
+        "prompt": "What should a driver be especially alert for?",
+        "promptDari": "راننده باید به چه چیزی توجه ویژه داشته باشد؟",
+        "choices": [
+          {
+            "en": "Children crossing the road",
+            "dari": "اطفالی که از سرک عبور می‌کنند"
+          },
+          {
+            "en": "Airport traffic",
+            "dari": "ترافیک میدان هوایی"
+          },
+          {
+            "en": "A railroad crossing",
+            "dari": "خط آهن"
+          }
+        ],
+        "correct": 0,
+        "why": "Watch carefully for children and follow crossing instructions.",
+        "whyDari": "متوجه اطفال باشید و دستورهای محل عبور را رعایت کنید.",
+        "sign": "school-crossing"
+      },
+      {
+        "id": "m9-scenario",
+        "prompt": "Children are approaching a marked school crossing. What should you do?",
+        "promptDari": "اطفال به گذرگاه مکتب نزدیک می‌شوند. چه می‌کنید؟",
+        "choices": [
+          {
+            "en": "Slow down and be prepared to stop",
+            "dari": "سرعت را کم و آمادهٔ توقف باشید"
+          },
+          {
+            "en": "Maintain speed to clear the area",
+            "dari": "با همان سرعت ادامه دهید"
+          }
+        ],
+        "correct": 0,
+        "why": "Watch carefully for children and follow crossing instructions.",
+        "whyDari": "متوجه اطفال باشید و دستورهای محل عبور را رعایت کنید."
+      },
+      {
+        "id": "m9-review",
+        "prompt": "You see the school crossing sign above. Who should you watch for?",
+        "promptDari": "علامت عبور شاگردان مکتب را در بالا می‌بینید. باید متوجه چه کسانی باشید؟",
+        "choices": [
+          {
+            "en": "Children crossing the road",
+            "dari": "اطفالی که از سرک عبور می‌کنند"
+          },
+          {
+            "en": "Airport traffic",
+            "dari": "ترافیک میدان هوایی"
+          },
+          {
+            "en": "A railroad crossing",
+            "dari": "خط آهن"
+          }
+        ],
+        "correct": 0,
+        "why": "Watch carefully for children and follow crossing instructions.",
+        "whyDari": "متوجه اطفال باشید و دستورهای محل عبور را رعایت کنید.",
+        "sign": "school-crossing"
+      }
+    ]
+  },
+  {
+    "id": "m10",
+    "title": "A real driving decision",
+    "dari": "تصمیم رانندگی",
+    "region": "coast",
+    "rounds": [
+      {
+        "id": "m10-sign",
+        "prompt": "You have a green light, but a pedestrian is still crossing. What do you do?",
+        "promptDari": "چراغ سبز است، اما یک عابر هنوز از سرک عبور می‌کند. چه می‌کنید؟",
+        "choices": [
+          {
+            "en": "Wait and let the pedestrian cross safely",
+            "dari": "صبر کنید تا عابر به مصونیت عبور کند"
+          },
+          {
+            "en": "Honk and drive forward",
+            "dari": "هارن بزنید و پیش بروید"
+          },
+          {
+            "en": "Speed up before the pedestrian",
+            "dari": "پیش از عابر سرعت را زیاد کنید"
+          }
+        ],
+        "correct": 0,
+        "why": "A green light does not remove your responsibility to yield to pedestrians.",
+        "whyDari": "چراغ سبز مسئولیت شما برای حق تقدم دادن به عابران پیاده را از بین نمی‌برد."
+      },
+      {
+        "id": "m10-scenario",
+        "prompt": "Your light is green but a person is crossing in front of you. What now?",
+        "promptDari": "چراغ سبز است اما کسی پیش روی شما عبور می‌کند. چه می‌کنید؟",
+        "choices": [
+          {
+            "en": "Wait until the pedestrian has crossed safely",
+            "dari": "صبر کنید تا عابر مصون عبور کند"
+          },
+          {
+            "en": "Drive through because your light is green",
+            "dari": "چون چراغ سبز است عبور کنید"
+          }
+        ],
+        "correct": 0,
+        "why": "A green light does not remove your responsibility to yield to pedestrians.",
+        "whyDari": "چراغ سبز مسئولیت شما برای حق تقدم دادن به عابران پیاده را از بین نمی‌برد."
+      },
+      {
+        "id": "m10-review",
+        "prompt": "A pedestrian is still crossing in front of your vehicle when your light turns green. What should you do?",
+        "promptDari": "وقتی چراغ شما سبز می‌شود، یک عابر پیاده هنوز از پیش روی موتر شما عبور می‌کند. چه باید کنید؟",
+        "choices": [
+          {
+            "en": "Wait and let the pedestrian cross safely",
+            "dari": "صبر کنید تا عابر به مصونیت عبور کند"
+          },
+          {
+            "en": "Honk and drive forward",
+            "dari": "هارن بزنید و پیش بروید"
+          },
+          {
+            "en": "Speed up before the pedestrian",
+            "dari": "پیش از عابر سرعت را زیاد کنید"
+          }
+        ],
+        "correct": 0,
+        "why": "A green light does not remove your responsibility to yield to pedestrians.",
+        "whyDari": "چراغ سبز مسئولیت شما برای حق تقدم دادن به عابران پیاده را از بین نمی‌برد."
+      }
+    ]
+  }
+]

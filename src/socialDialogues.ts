@@ -1,0 +1,30 @@
+type Line={speaker:string;en:string;dari:string};
+// Each scene uses the existing taught response as the learner's line.
+export const socialSceneLines:Record<string,{opening:string;openingDari:string;reply:string;replyDari:string}>={
+ 'parent-two-ages':{opening:'Hi! Do you have children at this school?',openingDari:'سلام! آیا اطفال شما در این مکتب هستند؟',reply:'It is nice to meet you and your family.',replyDari:'از آشنایی با شما و خانوادهٔ شما خوش شدم.'},
+ 'parent-playdate-details':{opening:'Shall we plan a time for the children to play?',openingDari:'برای بازی اطفال یک وقت تعیین کنیم؟',reply:'That sounds good. Let us confirm the details.',replyDari:'خوب است. بیایید جزئیات را تأیید کنیم.'},
+ 'parent-both-children':{opening:'Would you like to come to the playdate?',openingDari:'می‌خواهید به برنامهٔ بازی بیایید؟',reply:'Thanks for asking. Let us check the plan together.',replyDari:'تشکر که پرسیدید. بیایید برنامه را یکجا بررسی کنیم.'},
+ 'parent-decline':{opening:'Would you like to join us this weekend?',openingDari:'می‌خواهید آخر هفته با ما یکجا شوید؟',reply:'Of course. We can try another time.',replyDari:'البته. یک وقت دیگر کوشش می‌کنیم.'},
+ 'parent-volunteer-time':{opening:'Do you have some time to help at school?',openingDari:'برای کمک در مکتب کمی وقت دارید؟',reply:'Thank you. We can work around your schedule.',replyDari:'تشکر. می‌توانیم وقت شما را در نظر بگیریم.'},
+ 'parent-new-friend':{opening:'It is lovely seeing you at school again.',openingDari:'از دیدن دوبارهٔ شما در مکتب خوش شدم.',reply:'That would be nice. Let us find a time.',replyDari:'خوب می‌شود. یک وقت پیدا کنیم.'},
+ teacher:{opening:'Hello. How can I help you today?',openingDari:'سلام. امروز چطور کمک کرده می‌توانم؟',reply:'Of course. Let us talk about your child.',replyDari:'البته. دربارهٔ طفل شما گپ بزنیم.'},
+ 'school-volunteer':{opening:'We are looking for volunteers for our school event.',openingDari:'برای برنامهٔ مکتب به رضاکار نیاز داریم.',reply:'Thank you for offering to help.',replyDari:'تشکر که پیشنهاد کمک کردید.'},
+ 'parent-chat':{opening:'Hello! It is nice to see another parent here.',openingDari:'سلام! از دیدن یک والد دیگر اینجا خوش شدم.',reply:'It is nice to meet you, too.',replyDari:'من هم از آشنایی با شما خوش شدم.'},
+ neighbor:{opening:'Hi! I live next door.',openingDari:'سلام! من در خانهٔ کناری زندگی می‌کنم.',reply:'Welcome to the neighborhood!',replyDari:'به محله خوش آمدید!'},
+ pharmacy:{opening:'Hello. What can I help you with?',openingDari:'سلام. در چه مورد کمک کنم؟',reply:'Let me check that for you.',replyDari:'اجازه بدهید برای شما بررسی کنم.'},
+ playdate:{opening:'Our children enjoy playing together.',openingDari:'اطفال ما از بازی با هم خوش می‌شوند.',reply:'That sounds like a nice idea.',replyDari:'این یک فکر خوب است.'},
+ 'parent-intro':{opening:'Hi! I do not think we have met yet.',openingDari:'سلام! فکر می‌کنم هنوز آشنا نشده‌ایم.',reply:'It is lovely to meet you.',replyDari:'از آشنایی با شما خوش شدم.'},
+ 'ask-playground':{opening:'Hello! My child likes coming to this playground.',openingDari:'سلام! طفل من آمدن به این میدان بازی را دوست دارد.',reply:'It is a friendly place to meet other families.',replyDari:'این جای دوستانه برای آشنایی با خانواده‌های دیگر است.'},
+ 'teacher-meeting':{opening:'Hello. Would you like to talk about school?',openingDari:'سلام. می‌خواهید دربارهٔ مکتب گپ بزنید؟',reply:'Yes. Let us find a time to meet.',replyDari:'بلی. یک وقت برای دیدار پیدا کنیم.'},
+ 'homework-question':{opening:'Do you have a question about the homework?',openingDari:'دربارهٔ کارخانگی سؤال دارید؟',reply:'Certainly. I can explain the instructions.',replyDari:'البته. رهنمایی‌ها را توضیح داده می‌توانم.'},
+ 'school-absence':{opening:'Good morning. You have reached the school office.',openingDari:'صبح بخیر. با دفتر مکتب تماس گرفته‌اید.',reply:'Thank you for letting the school know.',replyDari:'تشکر که مکتب را خبر کردید.'},
+ 'birthday-invite':{opening:'We would love to invite your child to the birthday party.',openingDari:'خوش می‌شویم طفل شما را به جشن تولد دعوت کنیم.',reply:'Thank you for letting me know.',replyDari:'تشکر که مرا خبر کردید.'},
+ 'neighbor-noise':{opening:'Hello! Is everything all right?',openingDari:'سلام! همه چیز خوب است؟',reply:'Thank you for telling me politely.',replyDari:'تشکر که مؤدبانه به من گفتید.'},
+ 'doctor-symptoms':{opening:'Hello. How are you feeling today?',openingDari:'سلام. امروز چه حال دارید؟',reply:'Thank you. Let us talk about how you are feeling.',replyDari:'تشکر. دربارهٔ حال شما گپ بزنیم.'},
+ 'dentist-visit':{opening:'Good morning. How can our dental office help?',openingDari:'صبح بخیر. دفتر دندان‌پزشکی ما چطور کمک کند؟',reply:'Let us check the available appointments.',replyDari:'وقت‌های موجود را بررسی کنیم.'},
+ 'school-event':{opening:'We have a school event coming up.',openingDari:'یک برنامهٔ مکتب در پیش داریم.',reply:'I can help you find the event details.',replyDari:'در پیدا کردن جزئیات برنامه کمک کرده می‌توانم.'},
+ 'join-group':{opening:'Some of us have a parent group.',openingDari:'چند نفر از ما یک گروه والدین داریم.',reply:'You are welcome to join us.',replyDari:'خوش می‌شویم با ما یکجا شوید.'},
+ 'ask-clarification':{opening:'Let me tell you about the plan.',openingDari:'اجازه بدهید دربارهٔ برنامه به شما بگویم.',reply:'Of course. I can explain it another way.',replyDari:'البته. به شکل دیگر توضیح داده می‌توانم.'},
+ 'thank-teacher':{opening:'I am glad we could work together.',openingDari:'خوش هستم که توانستیم یکجا کار کنیم.',reply:'You are very welcome. Thank you, too.',replyDari:'خواهش می‌کنم. از شما هم تشکر.'},
+};
+export function socialDialogue(id:string,phrase:string,phraseDari:string):Line[]{const scene=socialSceneLines[id];return scene?[{speaker:'Other person',en:scene.opening,dari:scene.openingDari},{speaker:'You',en:phrase,dari:phraseDari},{speaker:'Other person',en:scene.reply,dari:scene.replyDari}]:[];}

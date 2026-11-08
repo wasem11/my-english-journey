@@ -1,0 +1,26 @@
+import React,{useState,useRef,useEffect} from 'react';
+import {View,Text,TouchableOpacity,StyleSheet} from 'react-native';
+import {Ionicons} from '@expo/vector-icons';
+import {JourneyUnit} from './journeyContent';
+import GameCharacter from './GameCharacter';
+import {characters} from './characters';
+import {conversationCharacter} from './conversationWorlds';
+import {speakEnglish,stopEnglishAudio} from './englishAudio';
+import {theme} from './theme';
+export default function ConversationStage({unit,translated,mode='choose',replyReady=false,playerSpeaking=false}:{unit:JourneyUnit;translated:boolean;mode?:'choose'|'listen'|'speak';replyReady?:boolean;playerSpeaking?:boolean}){
+ const character=conversationCharacter(unit.id),person=characters[character],lines=unit.dialogue||[];
+ const opening=lines.find(line=>line.speaker!=='You')||{en:unit.prompt,dari:unit.promptDari};
+ const playerLine={en:unit.phrase,dari:unit.phraseDari};
+ const closing=lines.slice(lines.findIndex(line=>line.speaker==='You')+1).find(line=>line.speaker!=='You')||opening;
+ const [line,setLine]=useState(opening),[speaker,setSpeaker]=useState<'player'|'npc'>('npc'),[talking,setTalking]=useState<'player'|'npc'|null>(null),[error,setError]=useState('');
+ const live=useRef(true);useEffect(()=>{live.current=true;return()=>{live.current=false;void stopEnglishAudio();};},[]);
+ const say=(who:'player'|'npc',next:{en:string;dari:string})=>{setError('');setLine(next);setSpeaker(who);void speakEnglish(next.en,{onStart:()=>{if(live.current)setTalking(who);},onEnd:()=>{if(live.current)setTalking(null);}}).catch(error=>{if(live.current){setTalking(null);setError(error.message);}});};
+ const listening=mode==='listen',bubbleHidden=listening&&!replyReady;
+ return <View style={s.scene}>
+  <View style={[s.bubble,(speaker==='player'||playerSpeaking)&&s.playerBubble]}><Text style={s.speaker}>{listening?'YOUR REPLY':(speaker==='player'||playerSpeaking)?'YOU':person.label.toUpperCase()}</Text><Text style={s.line}>{bubbleHidden?'Listen to the spoken reply, then choose the matching words below.':playerSpeaking?unit.phrase:listening?unit.phrase:line.en}</Text>{translated&&!bubbleHidden&&<Text style={s.dari}>{playerSpeaking?unit.phraseDari:listening?unit.phraseDari:line.dari}</Text>}</View>
+  <View style={s.characters}><View style={s.actor}><GameCharacter character={character} height={160} talking={talking==='npc'} facing="right"/><Text style={s.name}>{person.label}</Text><Text style={s.youNote}> </Text></View><View style={s.ground}/><View style={s.actor}><GameCharacter height={150} talking={talking==='player'||playerSpeaking} facing="left"/><Text style={s.name}>You</Text><Text style={s.youNote}>Your turn to connect</Text></View></View>
+  {listening?<TouchableOpacity accessibilityRole="button" disabled={playerSpeaking} accessibilityLabel="Listen to the character reply" style={s.play} onPress={()=>say('player',playerLine)}><Ionicons name="volume-high" size={20} color={theme.green}/><Text style={s.playText}>Hear the reply</Text></TouchableOpacity>:<View style={s.actions}><TouchableOpacity accessibilityRole="button" disabled={playerSpeaking} accessibilityLabel={`Hear ${person.label} speak`} style={s.play} onPress={()=>say('npc',opening)}><Ionicons name="volume-high" size={18} color={theme.green}/><Text style={s.playText}>Hear them</Text></TouchableOpacity>{(replyReady||mode==='speak')&&<TouchableOpacity accessibilityRole="button" disabled={playerSpeaking} style={s.play} onPress={()=>say('player',playerLine)}><Text style={s.playText}>Hear my reply</Text></TouchableOpacity>}{replyReady&&mode==='choose'&&<TouchableOpacity accessibilityRole="button" disabled={playerSpeaking} style={s.play} onPress={()=>say('npc',closing)}><Text style={s.playText}>Their response</Text></TouchableOpacity>}</View>}
+  {!!error&&<Text accessibilityRole="alert" style={s.error}>{error}</Text>}
+ </View>;
+}
+const s=StyleSheet.create({scene:{padding:16,borderRadius:22,backgroundColor:'#E6EBD9',borderWidth:1,borderColor:theme.line,marginBottom:16},bubble:{backgroundColor:theme.surface,borderRadius:19,borderBottomLeftRadius:5,padding:16,borderWidth:1,borderColor:'#D3DDC9'},playerBubble:{borderBottomLeftRadius:19,borderBottomRightRadius:5,backgroundColor:'#F5F4DA'},speaker:{fontSize:9,lineHeight:14,fontWeight:'800',letterSpacing:.6,color:theme.green},line:{fontSize:16,lineHeight:25,fontWeight:'600',color:theme.ink,marginTop:6},dari:{fontSize:14,lineHeight:24,writingDirection:'rtl',textAlign:'right',color:theme.muted,marginTop:8},characters:{height:211,flexDirection:'row',justifyContent:'space-around',alignItems:'flex-end',paddingTop:12},actor:{alignItems:'center',width:'44%',zIndex:2},ground:{position:'absolute',left:0,right:0,bottom:36,height:30,borderRadius:70,backgroundColor:'#CAD6BC'},name:{fontSize:11,lineHeight:18,fontWeight:'800',color:theme.green,textAlign:'center',marginTop:5},youNote:{fontSize:9,lineHeight:14,color:theme.muted},actions:{flexDirection:'row',flexWrap:'wrap',gap:8,marginTop:11},play:{minHeight:44,backgroundColor:theme.surface,borderRadius:13,paddingHorizontal:13,paddingVertical:11,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:6,marginTop:6},playText:{fontSize:11,lineHeight:18,fontWeight:'800',color:theme.green},error:{fontSize:12,lineHeight:19,color:theme.error,marginTop:10}});

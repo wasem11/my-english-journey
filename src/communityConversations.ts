@@ -1,0 +1,43 @@
+import type {JourneyUnit} from './journeyContent';
+import type {CharacterId} from './characters';
+
+export const communityLessonCharacters:Record<string,CharacterId>={
+ 'community-checkout':'cashier','community-cafe':'barista',
+ 'community-library-card':'librarian','community-storytime':'coordinator',
+ 'community-bus':'busDriver','community-post-office':'postalClerk',
+ 'doctor-symptoms':'doctor','dentist-visit':'dentist','school-absence':'schoolOffice',
+ 'school-volunteer':'volunteer','parent-volunteer-time':'volunteer','join-group':'coordinator',
+ 'parent-intro':'friend','ask-playground':'parkParent','birthday-invite':'parkParent',
+};
+export const communityConversationUnits:JourneyUnit[]=[
+ {id:'community-checkout',area:'social',title:'Talk with the cashier',dariTitle:'گپ با صندوقدار',topic:'People in your community',emoji:'🛒',
+  prompt:'The cashier has finished scanning your groceries. You need the receipt. What do you say?',promptDari:'صندوقدار حساب خرید شما را تمام کرده است. رسید می‌خواهید. چه می‌گویید؟',
+  choices:[{en:'Could I have the receipt, please?',dari:'لطفاً رسید را داده می‌توانید؟'},{en:'Could you help me find the bread?',dari:'در پیدا کردن نان کمک کرده می‌توانید؟'},{en:'Could you check the price of these apples?',dari:'قیمت این سیب‌ها را بررسی کرده می‌توانید؟'}],correct:0,
+  explain:'Ask for the receipt after paying so you can check your purchase.',explainDari:'بعد از پرداخت رسید بخواهید تا خرید خود را بررسی کنید.',phrase:'Could I have the receipt, please?',phraseDari:'لطفاً رسید را داده می‌توانید؟',
+  dialogue:[{speaker:'Alex · Cashier',en:'You are all set. Would you like your receipt?',dari:'حساب شما تمام شد. رسید می‌خواهید؟'},{speaker:'You',en:'Could I have the receipt, please?',dari:'لطفاً رسید را داده می‌توانید؟'},{speaker:'Alex · Cashier',en:'Of course. Here is your receipt. Have a nice day!',dari:'البته. این هم رسید شما. روز خوش داشته باشید!'}]},
+ {id:'community-cafe',area:'social',title:'Order from the barista',dariTitle:'سفارش به کارمند کافه',topic:'People in your community',emoji:'☕',
+  prompt:'The barista asks if you will stay or take your drink with you. You are leaving with it. What do you say?',promptDari:'کارمند کافه می‌پرسد نوشیدنی را اینجا می‌خورید یا با خود می‌برید. می‌خواهید آن را ببرید. چه می‌گویید؟',
+  choices:[{en:'For here, please.',dari:'لطفاً برای همین‌جا.'},{en:'To go, please.',dari:'لطفاً برای بردن.'},{en:'Could I see the menu, please?',dari:'لطفاً فهرست نوشیدنی‌ها را دیده می‌توانم؟'}],correct:1,
+  explain:'“To go” means you want to take your order away.',explainDari:'«برای بردن» یعنی می‌خواهید سفارش را با خود ببرید.',phrase:'To go, please.',phraseDari:'لطفاً برای بردن.',
+  dialogue:[{speaker:'Jordan · Barista',en:'Hi! Is your tea for here or to go?',dari:'سلام! چای را اینجا می‌خورید یا با خود می‌برید؟'},{speaker:'You',en:'To go, please.',dari:'لطفاً برای بردن.'},{speaker:'Jordan · Barista',en:'Sure. I will put a lid on your cup.',dari:'حتماً. سرپوش را روی پیاله می‌گذارم.'}]},
+ {id:'community-library-card',area:'social',title:'Meet the librarian',dariTitle:'آشنایی با کتابدار',topic:'Library & family activities',emoji:'📚',
+  prompt:'You are visiting the public library for the first time and want to borrow books. What do you ask the librarian?',promptDari:'برای اولین بار به کتابخانهٔ عمومی آمده‌اید و می‌خواهید کتاب قرض بگیرید. از کتابدار چه می‌پرسید؟',
+  choices:[{en:'When are the books due?',dari:'کتاب‌ها را تا چه وقت پس بدهم؟'},{en:'Where do I return these books?',dari:'این کتاب‌ها را کجا پس بدهم؟'},{en:'How can I get a library card?',dari:'چطور کارت کتابخانه گرفته می‌توانم؟'}],correct:2,
+  explain:'Ask how to get a card before borrowing books. The librarian can explain the local requirements.',explainDari:'پیش از قرض گرفتن کتاب، دربارهٔ گرفتن کارت بپرسید. کتابدار شرایط همان کتابخانه را توضیح داده می‌تواند.',phrase:'How can I get a library card?',phraseDari:'چطور کارت کتابخانه گرفته می‌توانم؟',
+  dialogue:[{speaker:'Rosa · Librarian',en:'Welcome to the library! How can I help you?',dari:'به کتابخانه خوش آمدید! چطور کمک کرده می‌توانم؟'},{speaker:'You',en:'How can I get a library card?',dari:'چطور کارت کتابخانه گرفته می‌توانم؟'},{speaker:'Rosa · Librarian',en:'I can help you apply at the front desk.',dari:'در میز پذیرش برای درخواست کارت کمک کرده می‌توانم.'}]},
+ {id:'community-storytime',area:'social',title:'Ask about storytime',dariTitle:'پرسیدن دربارهٔ قصه‌خوانی',topic:'Library & family activities',emoji:'📖',
+  prompt:'You want a library activity for your four-year-old. What do you ask the activities coordinator?',promptDari:'برای طفل چهارسالهٔ خود یک فعالیت در کتابخانه می‌خواهید. از مسئول فعالیت‌ها چه می‌پرسید؟',
+  choices:[{en:'Do you have storytime for four-year-olds?',dari:'برای اطفال چهارساله برنامهٔ قصه‌خوانی دارید؟'},{en:'Do you have a homework club for fourth graders?',dari:'برای شاگردان صنف چهارم گروه کمک درسی دارید؟'},{en:'Can I renew my library card?',dari:'کارت کتابخانهٔ خود را تمدید کرده می‌توانم؟'}],correct:0,
+  explain:'Name your child’s age so staff can suggest a suitable activity.',explainDari:'سن طفل خود را بگویید تا کارمند فعالیت مناسب پیشنهاد کند.',phrase:'Do you have storytime for four-year-olds?',phraseDari:'برای اطفال چهارساله برنامهٔ قصه‌خوانی دارید؟',
+  dialogue:[{speaker:'Priya · Activities coordinator',en:'Hello! Are you looking for a children’s activity?',dari:'سلام! دنبال فعالیت برای اطفال هستید؟'},{speaker:'You',en:'Do you have storytime for four-year-olds?',dari:'برای اطفال چهارساله برنامهٔ قصه‌خوانی دارید؟'},{speaker:'Priya · Activities coordinator',en:'Let us look at the children’s program together.',dari:'بیایید برنامهٔ اطفال را یکجا ببینیم.'}]},
+ {id:'community-bus',area:'social',title:'Speak to the bus driver',dariTitle:'گپ با رانندهٔ بس',topic:'Getting around town',emoji:'🚌',
+  prompt:'Before boarding, you want to check whether this bus stops near the library. What do you ask?',promptDari:'پیش از سوار شدن می‌خواهید بدانید این بس نزدیک کتابخانه توقف می‌کند یا نه. چه می‌پرسید؟',
+  choices:[{en:'What time does the library close?',dari:'کتابخانه ساعت چند بسته می‌شود؟'},{en:'Does this bus stop near the library?',dari:'این بس نزدیک کتابخانه توقف می‌کند؟'},{en:'Where can I return my library books?',dari:'کتاب‌های کتابخانه را کجا پس داده می‌توانم؟'}],correct:1,
+  explain:'Ask about the route before boarding. Wait until the driver is safely stopped.',explainDari:'پیش از سوار شدن دربارهٔ مسیر بپرسید. صبر کنید تا راننده در جای امن توقف کند.',phrase:'Does this bus stop near the library?',phraseDari:'این بس نزدیک کتابخانه توقف می‌کند؟',
+  dialogue:[{speaker:'Marcus · Bus driver',en:'Good morning. Where would you like to go?',dari:'صبح بخیر. کجا می‌خواهید بروید؟'},{speaker:'You',en:'Does this bus stop near the library?',dari:'این بس نزدیک کتابخانه توقف می‌کند؟'},{speaker:'Marcus · Bus driver',en:'Yes. The library is near the next stop.',dari:'بلی. کتابخانه نزدیک ایستگاه بعدی است.'}]},
+ {id:'community-post-office',area:'social',title:'Visit the postal clerk',dariTitle:'دیدار با کارمند پسته',topic:'Getting around town',emoji:'📦',
+  prompt:'You have a package to send and need help at the post office. What do you say?',promptDari:'یک بسته برای فرستادن دارید و در پسته به کمک نیاز دارید. چه می‌گویید؟',
+  choices:[{en:'I would like to pick up a package.',dari:'می‌خواهم یک بسته را تحویل بگیرم.'},{en:'I would like to buy a postcard.',dari:'می‌خواهم یک کارت پستی بخرم.'},{en:'I would like to mail this package, please.',dari:'لطفاً می‌خواهم این بسته را پسته کنم.'}],correct:2,
+  explain:'State that you want to send the package. The clerk can explain the mailing choices.',explainDari:'بگویید که می‌خواهید بسته را بفرستید. کارمند راه‌های فرستادن را توضیح داده می‌تواند.',phrase:'I would like to mail this package, please.',phraseDari:'لطفاً می‌خواهم این بسته را پسته کنم.',
+  dialogue:[{speaker:'Daniel · Postal clerk',en:'Hello. How can I help you at the post office today?',dari:'سلام. امروز در پسته چطور کمک کرده می‌توانم؟'},{speaker:'You',en:'I would like to mail this package, please.',dari:'لطفاً می‌خواهم این بسته را پسته کنم.'},{speaker:'Daniel · Postal clerk',en:'Certainly. Please place it on the scale.',dari:'حتماً. لطفاً آن را روی ترازو بگذارید.'}]},
+];
