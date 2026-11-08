@@ -55,13 +55,18 @@ function createHostedServer({env=process.env,converterReady=false,speechServer}=
    if(record.count>20||attempts.size>1000)return loginError(429,'Too many attempts. Please try again later.');
    let body='';try{for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>1024)return send(413,{error:'Request too large.'});}}catch{return send(400,{error:'Try again.'});}
    if(!equal(new URLSearchParams(body).get('code')||'',code))return loginError(401,'That code did not match. Please try again.');
-   attempts.delete(ip);const value=`${now+30*86400000}.${crypto.randomBytes(16).toString('hex')}`;
-   if(mobileLogin)return send(200,{token:`${value}.${sign(value)}`,expiresAt:now+30*86400000});
+   attempts.delete(ip);const lifetime=30*86400000;const value=`${now+lifetime}.${crypto.randomBytes(16).toString('hex')}`;
+   if(mobileLogin)return send(200,{token:`${value}.${sign(value)}`,expiresAt:now+lifetime});
    res.writeHead(303,{'Location':'/','Cache-Control':'no-store','Set-Cookie':`mej_session=${value}.${sign(value)}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`});res.end();return;
   }
   if(!authorized(req)){
    if(pathname.startsWith('/api/'))return send(401,{error:'Please reopen the app and enter your family access code.'});
    res.writeHead(303,{'Location':'/login','Cache-Control':'no-store'});res.end();return;
+  }
+  if(pathname==='/api/refresh-session'){
+   if(req.method!=='POST')return send(405,{error:'Method not allowed.'});
+   const expiresAt=Date.now()+30*86400000,value=`${expiresAt}.${crypto.randomBytes(16).toString('hex')}`;
+   return send(200,{token:`${value}.${sign(value)}`,expiresAt});
   }
   if(pathname.startsWith('/api/')){
    if(pathname==='/api/speech-assessment'&&req.method==='POST'){

@@ -26,8 +26,13 @@ async function main(){
   assert.equal((await fetch(base+'/api/mobile-session',{method:'POST',body:'code='+code})).status,403,'Mobile login still requires the expected origin.');
   assert.equal((await fetch(base+'/api/mobile-session',{method:'POST',headers:{Origin:origin},body:'code=incorrect'})).status,401);
   const mobile=await fetch(base+'/api/mobile-session',{method:'POST',headers:{Origin:origin},body:'code='+code});assert.equal(mobile.status,200);
-  const session=await mobile.json();assert.equal(typeof session.token,'string');assert(session.expiresAt>Date.now());
+  const session=await mobile.json();assert.equal(typeof session.token,'string');assert(session.expiresAt>Date.now()+29*86400000);
   const nativeHeaders={Authorization:'Bearer '+session.token,Origin:origin};
+  assert.equal((await fetch(base+'/api/refresh-session',{method:'POST',headers:{Origin:origin}})).status,401,'Renewal must require an existing valid session.');
+  const renewed=await fetch(base+'/api/refresh-session',{method:'POST',headers:nativeHeaders});assert.equal(renewed.status,200);assert((await renewed.json()).expiresAt>Date.now()+29*86400000);
+  const expiredValue=`${Date.now()-1000}.expired`,signature=require('node:crypto').createHmac('sha256',env.SESSION_SECRET).update(expiredValue).digest('base64url');
+  assert.equal((await fetch(base+'/api/refresh-session',{method:'POST',headers:{Origin:origin,Authorization:`Bearer ${expiredValue}.${signature}`}})).status,401,'Expired credentials cannot mint new sessions.');
+
   assert.equal((await fetch(base+'/api/speech-status',{headers:nativeHeaders})).status,200,'The native app must access speech without a browser cookie.');
   assert.equal((await fetch(base+'/api/speech-status',{headers:{Authorization:nativeHeaders.Authorization+'tampered'}})).status,401);
   assert.equal((await fetch(base+'/',{headers:nativeHeaders,redirect:'manual'})).status,303,'Native tokens only authorize API routes.');

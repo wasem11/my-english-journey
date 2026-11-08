@@ -15,8 +15,28 @@ export const onSessionChanged=(listener:()=>void)=>{changed.add(listener);return
 export const hasFamilySession=()=>!!token;
 export const onSessionExpired=(listener:()=>void)=>{listeners.add(listener);return()=>{listeners.delete(listener);};};
 export function nativeAuthHeaders():Record<string,string>{return bearerSession&&token?{Authorization:`Bearer ${token}`} : {};}
-export async function restoreNativeSession(){if(Platform.OS==='web'){try{token=window.sessionStorage.getItem(SESSION_KEY)||token;}catch{/* Private browsing can deny storage; keep the in-memory session. */}}else token=await SecureStore.getItemAsync(SESSION_KEY);return !!token;}
-export async function clearNativeSession(){const hadToken=!!token;token=null;if(Platform.OS==='web'){try{window.sessionStorage.removeItem(SESSION_KEY);}catch{}}else await SecureStore.deleteItemAsync(SESSION_KEY);if(hadToken){listeners.forEach(listener=>listener());changed.forEach(listener=>listener());}}
+async function saveSession(value:string){
+ if(Platform.OS==='web'){
+  try{window.localStorage.setItem(SESSION_KEY,value);try{window.sessionStorage.removeItem(SESSION_KEY);}catch{}}
+  catch{try{window.sessionStorage.setItem(SESSION_KEY,value);}catch{/* Restricted browsing: retain memory only. */}}
+ }else await SecureStore.setItemAsync(SESSION_KEY,value);
+ token=value;
+}
+export async function restoreNativeSession(){
+ if(Platform.OS==='web'){
+  let saved:string|null=null;
+  try{saved=window.localStorage.getItem(SESSION_KEY);}catch{}
+  if(!saved){try{saved=window.sessionStorage.getItem(SESSION_KEY);}catch{}}
+  if(saved)await saveSession(saved);
+ }else token=await SecureStore.getItemAsync(SESSION_KEY);
+ return !!token;
+}
+export async function clearNativeSession(){
+ const hadToken=!!token;token=null;
+ if(Platform.OS==='web'){for(const kind of ['localStorage','sessionStorage'] as const){try{window[kind].removeItem(SESSION_KEY);}catch{}}}
+ else await SecureStore.deleteItemAsync(SESSION_KEY);
+ if(hadToken){listeners.forEach(listener=>listener());changed.forEach(listener=>listener());}
+}
 export async function apiFetch(path:string,options:RequestInit={}){
  const requestToken=token;
  const headers=new Headers(options.headers);
@@ -28,7 +48,19 @@ export async function apiFetch(path:string,options:RequestInit={}){
 }
 export async function checkNativeSession(){
  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),6000);
- try{return await apiFetch('/api/speech-status',{signal:controller.signal});}finally{clearTimeout(timeout);}
+ try{
+  const response=await apiFetch('/api/speech-status',{signal:controller.signal});
+  const previous=token;
+  // Renew well before expiry; a temporary outage must not erase a remembered phone.
+  if(response.ok&&previous&&Number(previous.split('.')[0])<Date.now()+7*86400000){
+   try{
+    const renewal=await apiFetch('/api/refresh-session',{method:'POST',signal:controller.signal});
+    const result=renewal.ok?await renewal.json():null;
+    if(result&&typeof result.token==='string'&&token===previous)await saveSession(result.token);
+   }catch{/* Existing valid session remains usable while renewal is offline. */}
+  }
+  return response;
+ }finally{clearTimeout(timeout);}
 }
 export async function signInNative(code:string){
  if(!/^https:\/\//.test(API_URL))throw new Error('The app’s secure voice service has not been configured.');
@@ -37,6 +69,6 @@ export async function signInNative(code:string){
   const response=await fetch(`${API_URL}/api/mobile-session`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded',...(Platform.OS!=='web'?{Origin:API_URL}:{})},body:new URLSearchParams({code}).toString(),signal:controller.signal});
   const result=await response.json();
   if(!response.ok||typeof result.token!=='string')throw new Error(result.error||'Could not sign in. Please try again.');
-  if(Platform.OS==='web'){try{window.sessionStorage.setItem(SESSION_KEY,result.token);}catch{/* Voice remains available for this tab. */}}else await SecureStore.setItemAsync(SESSION_KEY,result.token);token=result.token;changed.forEach(listener=>listener());
+  await saveSession(result.token);changed.forEach(listener=>listener());
  }finally{clearTimeout(timeout);}
 }

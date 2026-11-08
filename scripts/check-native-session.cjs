@@ -19,5 +19,20 @@ async function check(os,storageBlocked=false){
  await exports.apiFetch('/api/speech-status');assert.equal(saved,null);assert.equal(expired,1);assert.equal(exports.nativeAuthHeaders().Authorization,undefined);unsubscribe();
  await exports.apiFetch('/api/speech-status');assert.equal(expired,1,'An already disconnected request must not cause a refresh loop.');
 }
-async function main(){await check('ios');await check('web');await check('web',true);console.log('PASS: native Keychain and external-web tab sessions authenticate voice requests, preserve multipart boundaries, and clear expired sessions without refresh loops.');}
+async function checkRememberedPhone(){
+ const persistent=new Map(),tab=new Map(),key='mejFamilySessionV1';let offlineRenewal=false,renewals=0;
+ const oldToken=`${Date.now()+6*86400000}.old.signature`,newToken=`${Date.now()+30*86400000}.new.signature`;
+ const storage=map=>({getItem:key=>map.get(key)||null,setItem:(key,value)=>map.set(key,value),removeItem:key=>map.delete(key)});
+ const source=ts.transpileModule(fs.readFileSync('src/nativeSession.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+ const boot=()=>{const exports={};vm.runInNewContext(source,{exports,process:{env:{EXPO_PUBLIC_API_URL:'https://family.example'}},window:{location:{origin:'https://family.github.io'},localStorage:storage(persistent),sessionStorage:storage(tab)},Headers,URLSearchParams,AbortController,setTimeout,clearTimeout,fetch:async url=>{
+  if(url.endsWith('/api/refresh-session')){renewals++;if(offlineRenewal)throw new TypeError('Offline');return {ok:true,status:200,json:async()=>({token:newToken})};}
+  return {ok:true,status:200,json:async()=>({ready:true})};
+ },require:name=>name==='react-native'?{Platform:{OS:'web'}}:{}});return exports;};
+ tab.set(key,oldToken);const first=boot();assert(await first.restoreNativeSession());assert.equal(persistent.get(key),oldToken);assert.equal(tab.size,0,'Existing tab sessions migrate to persistent storage.');
+ const reopened=boot();assert(await reopened.restoreNativeSession(),'A new browser tab must restore voice without the family code.');
+ await reopened.checkNativeSession();assert.equal(renewals,1);assert.equal(persistent.get(key),newToken,'Remembered phones renew before expiry.');
+ persistent.set(key,oldToken);const offline=boot();await offline.restoreNativeSession();offlineRenewal=true;await offline.checkNativeSession();assert(offline.hasFamilySession(),'Temporary renewal failures must preserve sign-in.');
+ await offline.clearNativeSession();assert.equal(persistent.size,0);assert.equal(tab.size,0);
+}
+async function main(){await check('ios');await check('web');await check('web',true);await checkRememberedPhone();console.log('PASS: native Keychain and external-web tab sessions authenticate voice requests, preserve multipart boundaries, and clear expired sessions without refresh loops.');}
 main().catch(error=>{console.error(error);process.exitCode=1;});
