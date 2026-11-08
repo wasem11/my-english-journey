@@ -1,3 +1,4 @@
+import {microphoneError} from './microphoneError';
 import { theme } from './theme';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -138,20 +139,27 @@ export default function VoiceChallenge({ unit, translated, onAssessment, onSpeak
         try {
             if (Platform.OS === 'web' && (typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia))
                 throw new Error('Please open this app in Safari or Chrome with microphone support.');
-            await stopEnglishAudio();
-            const permission = await Audio.requestPermissionsAsync();
-            if (!permission.granted)
-                throw new Error('Microphone access is needed for speaking practice. Enable it and try again.');
-            if (!live.current)
-                return;
-            await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
             const options = { ...Audio.RecordingOptionsPresets.HIGH_QUALITY };
             if (Platform.OS === 'web') {
                 const mimeType = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find(type => MediaRecorder.isTypeSupported(type));
                 options.web = { bitsPerSecond: 128000, ...(mimeType ? { mimeType } : {}) };
+                current = new Audio.Recording();
+                // Prepare requests getUserMedia directly and preserves its real error.
+                // Start during the tap, without a separate permission probe/stream.
+                const preparation=current.prepareToRecordAsync(options);
+                void stopEnglishAudio();
+                await preparation;
+            } else {
+                await stopEnglishAudio();
+                const permission = await Audio.requestPermissionsAsync();
+                if (!permission.granted)
+                    throw new Error('Microphone access is blocked. Open iPhone Settings, then Privacy & Security, then Microphone, and enable My English Journey. Return and tap Record again.');
+                if (!live.current)return;
+                await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+                current = new Audio.Recording();
+                await current.prepareToRecordAsync(options);
             }
-            current = new Audio.Recording();
-            await current.prepareToRecordAsync(options);
+            if(!live.current){await current.stopAndUnloadAsync();return;}
             await current.startAsync();
             if (!live.current) {
                 await current.stopAndUnloadAsync();
@@ -171,7 +179,7 @@ export default function VoiceChallenge({ unit, translated, onAssessment, onSpeak
                 await current.stopAndUnloadAsync().catch(() => { });
             await Audio.setAudioModeAsync({ allowsRecordingIOS: false }).catch(() => { });
             if (live.current)
-                setError(e instanceof Error ? e.message : 'Could not start recording.');
+                setError(microphoneError(e,Platform.OS==='web'));
         }
         finally {
             locked.current = false;

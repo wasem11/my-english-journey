@@ -28,6 +28,7 @@ jobs:
       - run: node scripts/check-hosted.cjs
       - run: node scripts/check-native-session.cjs
       - run: node scripts/check-ava-routing.cjs
+      - run: node scripts/check-microphone.cjs
       - run: npm run build:pages
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
