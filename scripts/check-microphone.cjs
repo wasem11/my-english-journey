@@ -9,5 +9,5 @@ const source=require('node:fs').readFileSync('src/VoiceChallenge.tsx','utf8');
 const web=source.slice(source.indexOf("const options ="),source.indexOf('} else {',source.indexOf('const options =')));
 assert(web.includes('current.prepareToRecordAsync(options)'));assert(!web.includes('requestPermissionsAsync'));
 assert(web.indexOf('prepareEnglishRecording()')<web.indexOf('current.prepareToRecordAsync(options)'));
-const audio=require('node:fs').readFileSync('src/englishAudio.ts','utf8');assert(!audio.includes("session.type='playback'"),'Playback-only audio sessions block Safari capture.');
+const audio=require('node:fs').readFileSync('src/englishAudio.ts','utf8');assert(audio.includes("session.type='play-and-record'"),'Capture must explicitly switch away from playback mode.');
 console.log('PASS: browser capture requests the microphone once during the tap; permission, unavailable-device, busy-device and native errors retain distinct recovery instructions.');

@@ -32,7 +32,9 @@ function prepareWebAudio():Promise<AudioContext>{
  if(!context||context.state==='closed')context=new AudioContextClass();
  const current=context;
  const session=(navigator as unknown as {audioSession?:{type:string}}).audioSession;
- if(session){try{session.type='auto';}catch{/* Unsupported audio session setting. */}}
+ // Playback needs the media category on iPhone (including when the ringer is silent).
+ // Recording explicitly switches to play-and-record before requesting the mic.
+ if(session){try{session.type='playback';}catch{/* Unsupported audio session setting. */}}
  return current.state==='running'?Promise.resolve(current):deadline(current.resume(),8000,'Your browser paused sound. Tap Listen again to enable it.').then(()=>current);
 }
 // Reset any playback-only category left by an earlier Listen before requesting capture.
