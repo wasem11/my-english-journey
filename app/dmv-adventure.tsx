@@ -125,7 +125,7 @@ export default function DmvAdventure() {
         try {
             const fresh = !completed.includes(level.id), next = completeLevel(level.id, completed);
             const bestScores = { ...rewardScores, [level.id]: Math.max(rewardScores[level.id] === 100 ? 100 : 80, score * 20) };
-            const previousReward = fresh ? 0 : 2 + (rewardForScore(rewardScores[level.id]) === 5 ? 3 : 0);
+            const previousReward = fresh ? 0 : Math.max(1,rewardForScore(rewardScores[level.id]));
             const added = rewardForScore(bestScores[level.id]) - previousReward;
             const previous = daily.date === dayKey() ? daily : emptyDaily();
             const nextDaily = { ...previous, lessons: previous.lessons + 1, earned: previous.earned + (fresh ? 25 : 0), highScores: previous.highScores + 1 };

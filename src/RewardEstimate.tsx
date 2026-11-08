@@ -41,7 +41,7 @@ export default function RewardEstimate({area,refreshKey='',compact=false}:{area?
    <View style={s.row}><Ionicons name="gift-outline" size={23} color={theme.green}/><View style={{flex:1}}><Text style={s.label}>{label}</Text><Text style={s.amount}>{failed?'Unavailable':value?`$${total}`:'Loading...'}</Text></View><Ionicons name={expanded?'chevron-up':'chevron-down'} size={22} color={theme.green}/></View>
    {!area&&value&&!failed&&<View style={s.breakdown}>{(['english','social','driving'] as const).map(key=><Text key={key} style={s.detail}>{areaNames[key]}: ${value[key]}</Text>)}</View>}
    <Text style={s.rule}>{REWARD_RULE}</Text>
-   {area&&<Text style={s.note}>{area==='driving'?'Pass with 4/5 for $2. A perfect 5/5 earns the $3 bonus.':`Complete the quiz and listening checks with at least ${VOICE_TARGET}% in speaking. The $3 bonus uses your best saved speaking score.`}</Text>}
+   {area&&<Text style={s.note}>{area==='driving'?'Pass with 4/5 for $1. A perfect 5/5 earns the $2 bonus.':`Complete the quiz and listening checks with at least ${VOICE_TARGET}% in speaking. A perfect 100% best saved speaking score earns the $2 bonus.`}</Text>}
    <Text style={s.note}>{REWARD_NOTE}</Text><Text style={s.link}>{expanded?'Hide completed lessons':'See completed lessons & earnings'}</Text></>}
   </TouchableOpacity>
   {expanded&&<View style={s.panel}>
@@ -56,13 +56,13 @@ export default function RewardEstimate({area,refreshKey='',compact=false}:{area?
        <View style={s.lessonTop}><Text style={s.lessonTitle}>{contributionTitle(item)}</Text><Text style={s.lessonAmount}>${item.total}</Text></View>
        <Text style={s.score}>{item.score===null?'Completed earlier. Score was not saved.':`${item.area==='driving'?'Best level score':'Best speaking score'}: ${item.score}%`}</Text>
        <View style={s.line}><Text style={s.body}>Completion reward</Text><Text style={s.money}>${item.base}</Text></View>
-       <View style={s.line}><Text style={s.body}>90%+ bonus</Text><Text style={s.money}>${item.bonus}</Text></View>
-       {item.score===null&&<Text style={s.note}>Only the $2 completion reward is counted. Replay and score 90% or higher to add the bonus.</Text>}
+       <View style={s.line}><Text style={s.body}>Perfect score bonus</Text><Text style={s.money}>${item.bonus}</Text></View>
+       {item.score===null&&<Text style={s.note}>Only the $1 completion reward is counted. Replay and score a perfect 100% to add the $2 bonus.</Text>}
       </View>)}
      </View>;
     })}
     <View style={s.total}><Text style={s.groupTitle}>Total reward estimate</Text><Text style={s.totalAmount}>${total}</Text></View>
-    <Text style={s.note}>A $3 bonus is added once when a completed lesson reaches 90%. Repeating it does not add another completion reward or bonus.</Text>
+    <Text style={s.note}>A $2 bonus is added once when a completed level reaches a perfect 100%. Repeating it does not add another completion reward or bonus.</Text>
    </>}
    <TouchableOpacity accessibilityRole="button" onPress={()=>setExpanded(false)} style={s.close}><Text style={s.closeText}>Close breakdown</Text></TouchableOpacity>
   </View>}
