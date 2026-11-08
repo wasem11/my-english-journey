@@ -9,21 +9,24 @@ import {NeighborhoodPlace} from './neighborhood';
 import EnglishGameScenery,{gameEnvironments} from './EnglishGameScenery';
 import {theme} from './theme';
 export type LearningCheckpoint={id:string;title:string;dari:string;done:boolean;ready:boolean};
-export default function LearningTrail({place,nodes,onStart,onFocusPoint,translated,variant=0,heading,subheading,suspended=false,targetId}:{place:NeighborhoodPlace;nodes:LearningCheckpoint[];onStart:(id:string)=>void;onFocusPoint:(y:number)=>void;translated:boolean;variant?:number;heading?:string;subheading?:string;suspended?:boolean;targetId?:string|null}){
- const {fontScale}=useWindowDimensions(),[width,setWidth]=useState(380),[reduce,setReduce]=useState(true),[moving,setMoving]=useState(false);
+export default function LearningTrail({place,nodes,onStart,onFocusPoint,translated,variant=0,heading,subheading,suspended=false,targetId,fromId,onArrive}:{place:NeighborhoodPlace;nodes:LearningCheckpoint[];onStart:(id:string)=>void;onFocusPoint:(y:number)=>void;translated:boolean;variant?:number;heading?:string;subheading?:string;suspended?:boolean;targetId?:string|null;fromId?:string;onArrive?:()=>void}){
+ const {fontScale}=useWindowDimensions(),[width,setWidth]=useState(380),[reduce,setReduce]=useState<boolean|null>(null),[moving,setMoving]=useState(false);
  const env=gameEnvironments[place.id],layout=trailLayout(fontScale,translated,nodes.length);
- const point=(index:number)=>({x:trailPoint(index+variant,width).x,y:layout.start+index*layout.spacing});
+ const point=(index:number)=>({x:trailPoint(Math.max(0,index+variant),width).x,y:layout.start+index*layout.spacing});
  const currentIndex=Math.max(0,nodes.findIndex(node=>!node.done)),allDone=nodes.every(node=>node.done),activeIndex=targetId&&nodes.some(node=>node.id===targetId)?nodes.findIndex(node=>node.id===targetId):allDone?nodes.length-1:currentIndex;
+ const arrival=useRef(onArrive);arrival.current=onArrive;
  const bob=useRef(new Animated.Value(0)).current,pulse=useRef(new Animated.Value(1)).current,walker=useRef(new Animated.ValueXY({x:0,y:0})).current,positioned=useRef(false);
  useEffect(()=>{let live=true;void AccessibilityInfo.isReduceMotionEnabled().then(value=>{if(live)setReduce(value);});const listener=AccessibilityInfo.addEventListener('reduceMotionChanged',setReduce);return()=>{live=false;listener.remove();};},[]);
  useFocusEffect(useCallback(()=>{if(reduce)return;const bounce=Animated.loop(Animated.sequence([Animated.timing(bob,{toValue:-4,duration:650,useNativeDriver:true}),Animated.timing(bob,{toValue:0,duration:650,useNativeDriver:true})]));const glow=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1.08,duration:900,useNativeDriver:true}),Animated.timing(pulse,{toValue:1,duration:900,useNativeDriver:true})]));bounce.start();glow.start();return()=>{bounce.stop();glow.stop();};},[reduce,bob,pulse]));
  useEffect(()=>{
-  if(suspended)return;
+  if(suspended||reduce===null)return;
   const p=point(activeIndex),target={x:Math.max(8,Math.min(width-64,p.x+(p.x>width/2?-87:42))),y:p.y-58};
   onFocusPoint(p.y);
-  if(!positioned.current||reduce){walker.setValue(target);setMoving(false);positioned.current=true;return;}
-  setMoving(true);const move=Animated.timing(walker,{toValue:target,duration:950,useNativeDriver:false});move.start(({finished})=>{if(finished)setMoving(false);});return()=>move.stop();
- },[activeIndex,width,layout.spacing,layout.start,variant,reduce,walker,onFocusPoint,suspended]);
+  if(!positioned.current&&!fromId){walker.setValue(target);setMoving(false);positioned.current=true;if(targetId)arrival.current?.();return;}
+  if(!positioned.current){const previous=point(nodes.findIndex(node=>node.id===fromId));walker.setValue({x:Math.max(8,Math.min(width-64,previous.x+(previous.x>width/2?-87:42))),y:previous.y-58});positioned.current=true;}
+  if(reduce){walker.setValue(target);setMoving(false);arrival.current?.();return;}
+  setMoving(true);const move=Animated.timing(walker,{toValue:target,duration:950,useNativeDriver:false});move.start(({finished})=>{if(finished){setMoving(false);arrival.current?.();}});return()=>move.stop();
+ },[activeIndex,width,layout.spacing,layout.start,variant,reduce,walker,onFocusPoint,suspended,targetId,fromId]);
  return <View onLayout={event=>setWidth(event.nativeEvent.layout.width)} style={[s.map,{height:layout.height,backgroundColor:env.ground}]}>
   <View pointerEvents="none" style={[s.topBand,{backgroundColor:env.edge}]}/>
   {nodes.map((node,index)=><React.Fragment key={`environment-${node.id}`}>

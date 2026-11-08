@@ -19,8 +19,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { journeyUnits } from '../src/journeyContent';
 const ink = theme.ink, purple = theme.green, green = theme.green;
 export default function JourneyLesson() {
-    const { id } = useLocalSearchParams<{
-        id: string;
+    const { id, autoStart } = useLocalSearchParams<{
+        id: string;autoStart?:string;
     }>();
     const router = useRouter();
     const insets = useSafeAreaInsets();
@@ -72,6 +72,6 @@ export default function JourneyLesson() {
         }
     }
     const correct = selected === unit.correct;
-    return <EnglishLevelGame unit={unit} listeningExercise={listeningExercise} quiz={{selected,checked,select:setSelected,check:()=>setChecked(true),retry:()=>{setSelected(null);setChecked(false);}}} listening={{selected:listenSelected,checked:listeningChecked,select:setListenSelected,check:()=>setListeningChecked(true),retry:()=>{setListenSelected(null);setListeningChecked(false);}}} voice={voice} onAssessment={setVoice} finished={complete} saving={saving} rewardAdded={rewardAdded} saveError={saveError} audioError={audioError} translated={translate} toggleDari={toggleDari} say={say} onComplete={finish} onClose={()=>router.replace({pathname:unit.area==='social'?'/conversations':'/neighborhood',params:{place:worldForLesson(unit.id)?.id||'preschool'}})}/>;
+    return <EnglishLevelGame autoStart={autoStart==='1'} unit={unit} listeningExercise={listeningExercise} quiz={{selected,checked,select:setSelected,check:()=>setChecked(true),retry:()=>{setSelected(null);setChecked(false);}}} listening={{selected:listenSelected,checked:listeningChecked,select:setListenSelected,check:()=>setListeningChecked(true),retry:()=>{setListenSelected(null);setListeningChecked(false);}}} voice={voice} onAssessment={setVoice} finished={complete} saving={saving} rewardAdded={rewardAdded} saveError={saveError} audioError={audioError} translated={translate} toggleDari={toggleDari} say={say} onComplete={finish} onAdvance={()=>router.replace({pathname:unit.area==='social'?'/conversations':'/neighborhood',params:{from:unit.id,auto:'1'}})} onClose={()=>router.replace({pathname:unit.area==='social'?'/conversations':'/neighborhood',params:{place:worldForLesson(unit.id)?.id||'preschool'}})}/>;
 }
 const s=StyleSheet.create({page:{flex:1,backgroundColor:theme.paper,padding:20}});

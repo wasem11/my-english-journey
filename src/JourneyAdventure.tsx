@@ -17,7 +17,7 @@ import RewardEstimate from './RewardEstimate';
 const parse=(value:string|null,fallback:unknown)=>{try{return value?JSON.parse(value):fallback;}catch{return fallback;}};
 export default function JourneyAdventure({area}:{area:'english'|'social'}){
  const places=worldsForArea(area),social=area==='social',placeKey=social?'mejConversationWorldV1':'mejNeighborhoodPlaceV1';
- const router=useRouter(),params=useLocalSearchParams<{place?:string}>(),insets=useSafeAreaInsets(),{height,width}=useWindowDimensions();
+ const router=useRouter(),params=useLocalSearchParams<{place?:string;from?:string;auto?:string}>(),insets=useSafeAreaInsets(),{height,width}=useWindowDimensions();
  const {translated,toggleDari}=useDariPreference(),scroll=useRef<ScrollView>(null);
  const approachTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
  const [approaching,setApproaching]=useState<string|null>(null);
@@ -28,13 +28,15 @@ export default function JourneyAdventure({area}:{area:'english'|'social'}){
  useFocusEffect(useCallback(()=>{
   let live=true;setApproaching(null);setError('');void AsyncStorage.multiGet(['mejJourneyDoneV1',VOICE_PROGRESS_KEY,placeKey]).then(rows=>{
    if(!live)return;const data=Object.fromEntries(rows),done=masteredJourneyIds(journeyUnits,parse(data.mejJourneyDoneV1,[]),parse(data[VOICE_PROGRESS_KEY],{}));
-   setMastered(done);setSelected(places.find(place=>place.id===(params.place||data[placeKey]))||nextAreaMission(area,done).place);setLoaded(true);
+   if(params.auto==='1'){const next=nextAreaMission(area,done);setApproaching(next.complete?null:next.unit.id);}
+   setMastered(done);setSelected(places.find(place=>place.id===(params.auto==='1'?nextAreaMission(area,done).place.id:(params.place||data[placeKey])))||nextAreaMission(area,done).place);setLoaded(true);
   }).catch(()=>{if(live){setLoaded(false);setError('Could not load your saved adventure. Go home and reopen Everyday English.');}});
   return()=>{live=false;if(approachTimer.current)clearTimeout(approachTimer.current);void stopEnglishAudio();};
- },[params.place,area,placeKey]));
+ },[params.place,params.from,params.auto,area,placeKey]));
  const focus=useCallback((y:number)=>scroll.current?.scrollTo({y:Math.max(0,y-height*.28),animated:false}),[height]);
  const chooseWorld=(place:NeighborhoodPlace)=>{if(approachTimer.current)clearTimeout(approachTimer.current);setApproaching(null);void stopEnglishAudio();setSelected(place);setWorlds(false);void AsyncStorage.setItem(placeKey,place.id).catch(()=>{});};
- const start=(id:string)=>{if(!loaded||!missionReady(selected,id,mastered))return;void stopEnglishAudio();if(approachTimer.current)clearTimeout(approachTimer.current);if(social){setApproaching(id);approachTimer.current=setTimeout(()=>router.push({pathname:'/journey-lesson',params:{id}}),1000);}else router.push({pathname:'/journey-lesson',params:{id}});};
+ const arrived=useCallback(()=>{if(approaching){const id=approaching;setApproaching(null);router.replace({pathname:'/journey-lesson',params:{id,autoStart:'1'}});}},[approaching,router]);
+ const start=(id:string)=>{if(!loaded||!missionReady(selected,id,mastered))return;void stopEnglishAudio();if(approachTimer.current)clearTimeout(approachTimer.current);setApproaching(id);};
  const nextWorld=()=>{const ordered=[...places.slice(worldIndex+1),...places.slice(0,worldIndex+1)];const place=ordered.find(place=>place.lessons.some(id=>!mastered.includes(id)));if(place)chooseWorld(place);else setWorlds(true);};
  return <View style={[s.root,{backgroundColor:worlds?theme.paper:env.ground,paddingLeft:insets.left,paddingRight:insets.right}]}>
   <View style={[s.toolbar,{paddingTop:insets.top+8}]}><TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to main screen" onPress={()=>router.replace('/')} style={s.iconButton}><Ionicons name="home-outline" size={24} color="white"/></TouchableOpacity><View style={{flex:1}}><Text style={s.kicker}>{worlds?(social?'CONVERSATIONS':'EVERYDAY ENGLISH'):`${social?'CONVERSATION ':''}WORLD ${worldIndex+1} OF ${places.length}`}</Text><Text style={s.toolbarTitle}>{worlds?'Choose your world':env.name}</Text></View><TouchableOpacity accessibilityRole="button" accessibilityLabel={worlds?'Return to current world map':'Choose a different world'} onPress={()=>setWorlds(value=>!value)} style={s.iconButton}><Ionicons name={worlds?'map-outline':'grid-outline'} size={23} color="white"/></TouchableOpacity><TouchableOpacity accessibilityRole="button" accessibilityLabel={translated?'Hide Afghan Dari':'Translate to Afghan Dari'} onPress={toggleDari} style={s.iconButton}><Ionicons name="language-outline" size={23} color="white"/></TouchableOpacity></View>
@@ -45,7 +47,7 @@ export default function JourneyAdventure({area}:{area:'english'|'social'}){
    <RewardEstimate area={area}/><TouchableOpacity accessibilityRole="button" onPress={()=>router.push({pathname:'/journey',params:{area,view:'list'}})} style={s.listButton}><Ionicons name="list-outline" size={20} color={theme.green}/><Text style={s.listText}>{social?'Browse all conversation lessons':'Browse the full lesson list'}</Text></TouchableOpacity>
   </ScrollView>:<>
    <RewardEstimate compact area={area} refreshKey={mastered.join('|')}/>
-   {!loaded?<View style={s.loading}><Text style={s.subtitle}>{error?'Progress unavailable.':'Loading your adventure...'}</Text></View>:<ScrollView ref={scroll} contentContainerStyle={s.mapContent}><LearningTrail key={selected.id} place={selected} nodes={missions.map(unit=>({id:unit.id,title:unit.title,dari:unit.dariTitle,done:mastered.includes(unit.id),ready:missionReady(selected,unit.id,mastered)}))} onStart={start} targetId={approaching} onFocusPoint={focus} translated={translated}/></ScrollView>}
+   {!loaded?<View style={s.loading}><Text style={s.subtitle}>{error?'Progress unavailable.':'Loading your adventure...'}</Text></View>:<ScrollView ref={scroll} contentContainerStyle={s.mapContent}><LearningTrail key={selected.id} place={selected} nodes={missions.map(unit=>({id:unit.id,title:unit.title,dari:unit.dariTitle,done:mastered.includes(unit.id),ready:missionReady(selected,unit.id,mastered)}))} onStart={start} targetId={approaching} fromId={params.from} onArrive={arrived} onFocusPoint={focus} translated={translated}/></ScrollView>}
    <View style={[s.dock,{paddingBottom:Math.max(insets.bottom,12)}]}><View style={{flex:1}}><Text style={s.dockKicker}>{worldDone?'WORLD MASTERED':'NEXT LEVEL'}</Text><Text numberOfLines={2} style={s.dockTitle}>{worldDone?'A new environment is waiting.':nextHere.title}</Text></View><TouchableOpacity accessibilityRole="button" disabled={!loaded} onPress={()=>worldDone?nextWorld():start(nextHere.id)} style={[s.primary,!loaded&&{opacity:.5}]}><Text style={s.primaryText}>{worldDone?'Next world':'Play level'}</Text><Ionicons name="arrow-forward" size={18} color={theme.green}/></TouchableOpacity></View>
   </>}
  </View>;

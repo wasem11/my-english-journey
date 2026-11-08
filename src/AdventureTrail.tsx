@@ -1,13 +1,16 @@
 import DriverJeep from './DriverJeep';
 import {theme} from './theme';
 import React,{useEffect,useRef,useState} from 'react';
-import {Animated,Easing,Image,StyleSheet,Text,TouchableOpacity,View,useWindowDimensions} from 'react-native';
+import {Animated,AccessibilityInfo,Easing,Image,StyleSheet,Text,TouchableOpacity,View,useWindowDimensions} from 'react-native';
 import {AdventureRegion,adventureLevels,canPlayLevel} from './dmvAdventure';
 import {trailPoint,parkedPoint,trailLayout,trailLabelBounds} from './adventureMapGeometry';
 
-export default function AdventureTrail({region,completed,currentIndex,onStart,translated,fullScreen=false,onFocusPoint}:{region:AdventureRegion;completed:string[];currentIndex:number;onStart:(index:number)=>void;translated:boolean;fullScreen?:boolean;onFocusPoint?:(y:number)=>void}){
+export default function AdventureTrail({region,completed,currentIndex,onStart,translated,fullScreen=false,onFocusPoint,initialIndex,onArrive}:{region:AdventureRegion;completed:string[];currentIndex:number;onStart:(index:number)=>void;translated:boolean;fullScreen?:boolean;onFocusPoint?:(y:number)=>void;initialIndex?:number;onArrive?:()=>void}){
+ const arrival=useRef(onArrive);arrival.current=onArrive;
  const {fontScale}=useWindowDimensions();
  const levels=adventureLevels.map((level,index)=>({level,index})).filter(x=>x.level.region===region.id);
+ const [reduce,setReduce]=useState<boolean|null>(null);
+ useEffect(()=>{let live=true;void AccessibilityInfo.isReduceMotionEnabled().then(value=>{if(live)setReduce(value);});return()=>{live=false;};},[]);
  const [width,setWidth]=useState(350),[driving,setDriving]=useState(false);
  const progress=useRef(new Animated.Value(0)).current;
  const bob=useRef(new Animated.Value(0)).current;
@@ -18,20 +21,21 @@ export default function AdventureTrail({region,completed,currentIndex,onStart,tr
  const carLocal=local>=0?local:finished?levels.length-1:-1;
  const {height,spacing,start}=trailLayout(fontScale,translated,levels.length);
  const point=(i:number)=>trailPoint(i,width,spacing,start);
- const parking=(i:number)=>parkedPoint(i,width,spacing,start);
+ const parking=(i:number)=>i<0?{...parkedPoint(0,width,spacing,start),y:start-150}:parkedPoint(i,width,spacing,start);
  useEffect(()=>{if(carLocal>=0)onFocusPoint?.(point(carLocal).y);},[carLocal,width,spacing,start,onFocusPoint]);
  useEffect(()=>{const loop=Animated.loop(Animated.sequence([Animated.timing(bob,{toValue:-3,duration:700,useNativeDriver:true}),Animated.timing(bob,{toValue:2,duration:700,useNativeDriver:true})]));loop.start();return()=>loop.stop();},[bob]);
  useEffect(()=>{
+  if(reduce===null)return;
   const id=progress.addListener(({value})=>{const first=Math.floor(value),end=Math.min(first+1,levels.length-1),u=value-first;const a=parking(first),b=parking(end);setPose({x:a.x+(b.x-a.x)*u,y:a.y+(b.y-a.y)*u});});
-  const old=previous.current;progress.stopAnimation();setDriving(false);
+  const old=initialIndex!==undefined?{region:region.id,local:Math.max(-1,levels.findIndex(x=>x.index===initialIndex))}:previous.current;progress.stopAnimation();setDriving(false);
   if(carLocal>=0){
-   if(old?.region===region.id&&old.local>=0&&carLocal===old.local+1){
-    progress.setValue(old.local);setDriving(true);Animated.timing(progress,{toValue:carLocal,duration:1600,easing:Easing.inOut(Easing.cubic),useNativeDriver:false}).start(()=>setDriving(false));
+   if(old?.region===region.id&&old.local>=-1&&carLocal!==old.local&&(initialIndex!==undefined||carLocal===old.local+1)){
+    progress.setValue(old.local);setDriving(true);Animated.timing(progress,{toValue:carLocal,duration:reduce?300:1600,easing:Easing.inOut(Easing.cubic),useNativeDriver:false}).start(({finished})=>{setDriving(false);if(finished)arrival.current?.();});
    }else{progress.setValue(carLocal);setPose(parking(carLocal));}
   }
   previous.current={region:region.id,local:carLocal};
   return()=>{progress.stopAnimation();progress.removeListener(id);};
- },[carLocal,width,region.id,levels.length,progress,spacing,start]);
+ },[carLocal,width,region.id,levels.length,progress,spacing,start,reduce,initialIndex]);
  return <View onLayout={e=>setWidth(e.nativeEvent.layout.width)} style={[s.map,{height,backgroundColor:region.ground,borderColor:region.accent},fullScreen&&{borderRadius:0,borderWidth:0,marginTop:0,flexGrow:1}]}>
   <View pointerEvents="none" style={[s.sky,{backgroundColor:region.accent}]}><Text style={s.skyText}>{region.emoji}   ☁️                 ☀️</Text></View>
   {levels.map(({level},i)=><React.Fragment key={`scenery-${level.id}`}>

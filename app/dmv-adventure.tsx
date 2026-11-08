@@ -1,3 +1,4 @@
+import CheckpointDrive from '../src/CheckpointDrive';
 import DriverJeep from '../src/DriverJeep';
 import { theme } from '../src/theme';
 import { DRIVING_REWARD_SCORES_KEY, rewardForScore } from '../src/rewards';
@@ -37,6 +38,8 @@ export default function DmvAdventure() {
     const [regionId, setRegionId] = useState<RegionId>('coast'), [tab, setTab] = useState<'map' | 'missions' | 'rewards'>('map');
     const [showStateMap, setShowStateMap] = useState(true);
     const [mapView, setMapView] = useState<'regions' | 'trail'>('trail');
+    const [travelling,setTravelling]=useState(false);
+    const [departed,setDeparted]=useState<number|undefined>(undefined);
     const [active, setActive] = useState<number | null>(null), [stage, setStage] = useState(0), [score, setScore] = useState(0), [selected, setSelected] = useState<number | null>(null);
     const [soundOn, setSoundOn] = useState(false), [loaded, setLoaded] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState('');
     const answerLock = useRef(false), saveLock = useRef(false), claimLock = useRef(false);
@@ -92,6 +95,7 @@ export default function DmvAdventure() {
         if (!loaded || saveLock.current || !canPlayLevel(index, completed))
             return;
         void stopEnglishAudio();
+        setDeparted(undefined);
         setActive(index);
         setRewardAdded(0);
         setStage(0);
@@ -167,10 +171,23 @@ export default function DmvAdventure() {
         setActive(null);
         setTab('map');
         setMapView('trail');
-        if (continueRoute)
-            setRegionId(current.region);
+        if (continueRoute){setDeparted(active===null?undefined:active);setRegionId(current.region);setShowStateMap(allDone);}
         top();
     };
+    useEffect(()=>{
+        if(selected===null||!round||saving||error==='Progress could not be saved. Please try again.')return;
+        const timer=setTimeout(()=>{
+            if(stage===level!.rounds.length-1)advance();
+            else {void stopEnglishAudio();setTravelling(true);}
+        },selected===round.correct?1400:6500);
+        return()=>clearTimeout(timer);
+    },[selected,stage,active,saving]);
+    useEffect(()=>{
+        if(!done||!passed||saving||active===null)return;
+        const timer=setTimeout(()=>{backToMap(true);},1400);
+        return()=>clearTimeout(timer);
+    },[done,passed,saving,active]);
+
     const reviewRegion = (id: RegionId) => { setShowStateMap(false); setRegionId(id); setActive(null); setTab('map'); setMapView('trail'); top(); };
     const goHome = () => {
         if (saveLock.current)
@@ -200,6 +217,7 @@ export default function DmvAdventure() {
             claimLock.current = false;
         }
     };
+    if(travelling)return <CheckpointDrive from={stage+1} to={stage+2} onArrive={()=>{setTravelling(false);advance();}}/>;
     if (loaded && active === null && tab === 'map' && mapView === 'trail' && (!allDone || !showStateMap))
         return <View style={[s.root, { backgroundColor: region.ground, paddingLeft: insets.left, paddingRight: insets.right, paddingBottom: insets.bottom }]}>
   <View style={[s.mapToolbar, { paddingTop: insets.top + 8, paddingHorizontal: compact ? 8 : 14, gap: compact ? 6 : 10 }]}>
@@ -210,7 +228,7 @@ export default function DmvAdventure() {
   </View>
   <ScrollView ref={scroll} style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, width: '100%' }}>
    {!regionUnlocked && !regionComplete && <View style={s.mapNotice}>{b('Preview: complete earlier levels to unlock this region.', 'برای باز کردن این منطقه، سطح‌های قبلی را تکمیل کنید.', 'small')}</View>}
-   <RewardEstimate area="driving" compact refreshKey={JSON.stringify(rewardScores)}/><AdventureTrail fullScreen onFocusPoint={focusMap} region={region} completed={completed} currentIndex={Math.min(nextIndex, adventureLevels.length - 1)} onStart={start} translated={translated}/>
+   <RewardEstimate area="driving" compact refreshKey={JSON.stringify(rewardScores)}/><AdventureTrail fullScreen initialIndex={departed} onArrive={()=>{if(departed!==undefined&&!allDone){setDeparted(undefined);start(Math.min(nextIndex,adventureLevels.length-1));}}} onFocusPoint={focusMap} region={region} completed={completed} currentIndex={Math.min(nextIndex, adventureLevels.length - 1)} onStart={start} translated={translated}/>
   </ScrollView>
  </View>;
     return <View style={[s.root, { paddingLeft: insets.left, paddingRight: insets.right }]}><ScrollView ref={scroll} style={{ flex: 1 }} contentContainerStyle={[s.wrap, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 24, paddingHorizontal: compact ? 12 : 16 }]}>
@@ -239,7 +257,7 @@ export default function DmvAdventure() {
      {selected !== null && <View accessibilityLiveRegion="polite" style={s.feedback}><Text style={s.feedbackTitle}>{selected === round.correct ? '✓ Correct!' : 'Let’s learn from this'}</Text>{translated && <Text style={s.dari}>{selected === round.correct ? 'درست است!' : 'از این جواب یاد بگیریم'}</Text>}{b(round.why, round.whyDari)}<TouchableOpacity onPress={() => void Linking.openURL(round.source || handbook)}><Text style={s.link}>Read the handbook topic ↗</Text>{translated && <Text style={s.dari}>این موضوع را در کتاب رهنما بخوانید</Text>}</TouchableOpacity></View>}
     </View>
     {b('Using Afghan Dari never lowers your score.', 'استفاده از دری امتیاز شما را کم نمی‌کند.', 'small')}
-    {selected !== null && <TouchableOpacity disabled={saving} style={[s.action, saving && { opacity: .6 }]} onPress={advance}><Text style={s.actionText}>{saving ? 'Saving…' : stage === level.rounds.length - 1 ? 'See results →' : 'Next question →'}</Text>{translated && <Text style={s.actionDari}>{saving ? 'در حال ذخیره…' : stage === level.rounds.length - 1 ? 'دیدن نتیجه' : 'پرسش بعدی'}</Text>}</TouchableOpacity>}
+    {selected !== null && <TouchableOpacity disabled={saving} style={[s.action, saving && { opacity: .6 }]} onPress={()=>stage===level.rounds.length-1?advance():setTravelling(true)}><Text style={s.actionText}>{saving ? 'Saving…' : stage === level.rounds.length - 1 ? 'See results →' : 'Next question →'}</Text>{translated && <Text style={s.actionDari}>{saving ? 'در حال ذخیره…' : stage === level.rounds.length - 1 ? 'دیدن نتیجه' : 'پرسش بعدی'}</Text>}</TouchableOpacity>}
    </>}
    <TouchableOpacity disabled={saving} onPress={() => backToMap()} style={s.backLink}><Text style={s.link}>Back to adventure map</Text>{translated && <Text style={s.dari}>برگشت به نقشه</Text>}</TouchableOpacity>
   </>}
