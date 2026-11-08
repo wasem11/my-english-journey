@@ -1,6 +1,6 @@
 import {Platform} from 'react-native';
 import {Audio as ExpoAudio} from 'expo-av';
-import {nativeAuthHeaders,EXTERNAL_WEB_API,apiFetch,hasFamilySession,requestVoiceAccess} from './nativeSession';
+import {nativeAuthHeaders,EXTERNAL_WEB_API,apiFetch,hasFamilySession,requestVoiceAccess,restoreNativeSession} from './nativeSession';
 
 const API=(process.env.EXPO_PUBLIC_API_URL||(Platform.OS==='web'&&typeof window!=='undefined'?window.location.origin:'')).replace(/\/$/,'');
 type PlaybackHooks={onStart?:()=>void;onEnd?:()=>void};
@@ -64,6 +64,7 @@ export async function speakEnglish(text:string,hooks:PlaybackHooks={}){
   playbackEnded=ended;
   const path=`/api/narration?v=jenny-slow-v2&text=${encodeURIComponent(text)}`;
   if(Platform.OS==='web'&&audioContext){
+   if(EXTERNAL_WEB_API&&!hasFamilySession())await restoreNativeSession();
    if(EXTERNAL_WEB_API&&!hasFamilySession()){requestVoiceAccess();throw new PlaybackError('Enter your family code in Connect voice, then tap Listen again.');}
    let audio=recordings.get(path);
    if(audio){recordings.delete(path);recordings.set(path,audio);}

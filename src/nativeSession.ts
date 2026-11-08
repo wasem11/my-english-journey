@@ -15,29 +15,58 @@ export const onSessionChanged=(listener:()=>void)=>{changed.add(listener);return
 export const hasFamilySession=()=>!!token;
 export const onSessionExpired=(listener:()=>void)=>{listeners.add(listener);return()=>{listeners.delete(listener);};};
 export function nativeAuthHeaders():Record<string,string>{return bearerSession&&token?{Authorization:`Bearer ${token}`} : {};}
+// Independent durable storage for installed iPhone web apps when Web Storage fails.
+function browserSession(mode:'read'|'write'|'delete',value?:string):Promise<string|null>{
+ if(typeof indexedDB==='undefined')return Promise.resolve(null);
+ return new Promise(resolve=>{
+  let settled=false,db:IDBDatabase|undefined;
+  const done=(result:string|null=null)=>{if(settled)return;settled=true;clearTimeout(timeout);db?.close();resolve(result);};
+  const timeout=setTimeout(()=>done(),2500);
+  try{
+   const opening=indexedDB.open('mej-voice-session',1);
+   opening.onupgradeneeded=()=>{if(!opening.result.objectStoreNames.contains('session'))opening.result.createObjectStore('session');};
+   opening.onerror=()=>done();opening.onblocked=()=>done();
+   opening.onsuccess=()=>{
+    db=opening.result;if(settled){db.close();return;}
+    try{
+     const transaction=db.transaction('session',mode==='read'?'readonly':'readwrite'),store=transaction.objectStore('session');
+     let result:string|null=null;
+     if(mode==='read'){const request=store.get(SESSION_KEY);request.onsuccess=()=>{result=typeof request.result==='string'?request.result:null;};}
+     else if(mode==='write')store.put(value,SESSION_KEY);else store.delete(SESSION_KEY);
+     transaction.oncomplete=()=>done(result);transaction.onerror=()=>done();transaction.onabort=()=>done();
+    }catch{done();}
+   };
+  }catch{done();}
+ });
+}
 async function saveSession(value:string){
  if(Platform.OS==='web'){
+  token=value;
   try{window.localStorage.setItem(SESSION_KEY,value);try{window.sessionStorage.removeItem(SESSION_KEY);}catch{}}
   catch{try{window.sessionStorage.setItem(SESSION_KEY,value);}catch{/* Restricted browsing: retain memory only. */}}
+  await browserSession('write',value);
  }else await SecureStore.setItemAsync(SESSION_KEY,value);
  token=value;
 }
 export async function restoreNativeSession(){
+ if(token)return true;
  if(Platform.OS==='web'){
   let saved:string|null=null;
   try{saved=window.localStorage.getItem(SESSION_KEY);}catch{}
   if(!saved){try{saved=window.sessionStorage.getItem(SESSION_KEY);}catch{}}
+  if(!saved)saved=await browserSession('read');
   if(saved)await saveSession(saved);
  }else token=await SecureStore.getItemAsync(SESSION_KEY);
  return !!token;
 }
 export async function clearNativeSession(){
  const hadToken=!!token;token=null;
- if(Platform.OS==='web'){for(const kind of ['localStorage','sessionStorage'] as const){try{window[kind].removeItem(SESSION_KEY);}catch{}}}
+ if(Platform.OS==='web'){for(const kind of ['localStorage','sessionStorage'] as const){try{window[kind].removeItem(SESSION_KEY);}catch{}}await browserSession('delete');}
  else await SecureStore.deleteItemAsync(SESSION_KEY);
  if(hadToken){listeners.forEach(listener=>listener());changed.forEach(listener=>listener());}
 }
 export async function apiFetch(path:string,options:RequestInit={}){
+ if(bearerSession&&!token)await restoreNativeSession();
  const requestToken=token;
  const headers=new Headers(options.headers);
  for(const [key,value] of Object.entries(nativeAuthHeaders()))headers.set(key,value);

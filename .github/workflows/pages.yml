@@ -28,6 +28,7 @@ jobs:
       - run: node scripts/check-map-transitions.cjs
       - run: node scripts/check-hosted.cjs
       - run: node scripts/check-native-session.cjs
+      - run: node scripts/check-web-update.cjs
       - run: node scripts/check-ava-routing.cjs
       - run: node scripts/check-narration.cjs
       - run: node scripts/check-microphone.cjs

@@ -1,3 +1,4 @@
+import {checkWebAppUpdate} from '../src/webAppUpdate';
 import React,{useCallback,useRef,useState} from 'react';
 import {AppState,View,Text,ScrollView,TouchableOpacity,StyleSheet,TextInput,StatusBar,useWindowDimensions} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
@@ -22,7 +23,7 @@ export default function Home(){
  useFocusEffect(useCallback(()=>{
   let live=true,loading=false,lastDay='';
   const refresh=async()=>{
-   if(loading)return;loading=true;const date=new Date();
+   if(loading)return;loading=true;const date=new Date();void checkWebAppUpdate();
    try{
     const rows=await AsyncStorage.multiGet(['mejJourneyDoneV1',VOICE_PROGRESS_KEY,'dmvAdventureCompletedV1','learnerName',VISIT_STREAK_KEY]);
     if(!live)return;const data=Object.fromEntries(rows),streak=recordVisit(parse(data[VISIT_STREAK_KEY],null),date);

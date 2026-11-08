@@ -12,7 +12,7 @@ function load(api,os='ios',external=false,options={}){
  const source=ts.transpileModule(fs.readFileSync('src/englishAudio.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  vm.runInNewContext(source,{exports,Error,process:{env:{EXPO_PUBLIC_API_URL:api}},encodeURIComponent,AbortController,setTimeout,clearTimeout,navigator:{audioSession},window:{location:{origin:'https://family.example'},AudioContext:BrowserAudioContext},require(name){
   if(name==='react-native')return {Platform:{OS:os}};
-  if(name==='./nativeSession')return {EXTERNAL_WEB_API:external,hasFamilySession:()=>options.session!==false,requestVoiceAccess:()=>accessRequests++,nativeAuthHeaders:()=>({Authorization:'Bearer test-session'}),apiFetch:async (p,request)=>{order.push('fetch');fetched.push(p);return options.fetchImpl?options.fetchImpl(response,request):response;}};
+  if(name==='./nativeSession')return {EXTERNAL_WEB_API:external,hasFamilySession:()=>options.session!==false,restoreNativeSession:async()=>options.session!==false,requestVoiceAccess:()=>accessRequests++,nativeAuthHeaders:()=>({Authorization:'Bearer test-session'}),apiFetch:async (p,request)=>{order.push('fetch');fetched.push(p);return options.fetchImpl?options.fetchImpl(response,request):response;}};
   if(name==='expo-av')return {Audio:{Sound:{createAsync:async(input)=>({sound:{setOnPlaybackStatusUpdate:callback=>{handler=callback;},playAsync:async()=>played.push(input.uri),unloadAsync:async()=>{}}})}}};
   throw new Error('Unexpected audio provider: '+name);
  }});
