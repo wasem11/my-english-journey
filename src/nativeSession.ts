@@ -15,14 +15,15 @@ export const onSessionChanged=(listener:()=>void)=>{changed.add(listener);return
 export const hasFamilySession=()=>!!token;
 export const onSessionExpired=(listener:()=>void)=>{listeners.add(listener);return()=>{listeners.delete(listener);};};
 export function nativeAuthHeaders():Record<string,string>{return bearerSession&&token?{Authorization:`Bearer ${token}`} : {};}
-export async function restoreNativeSession(){token=Platform.OS==='web'?window.sessionStorage.getItem(SESSION_KEY):await SecureStore.getItemAsync(SESSION_KEY);return !!token;}
-export async function clearNativeSession(){const hadToken=!!token;token=null;if(Platform.OS==='web')window.sessionStorage.removeItem(SESSION_KEY);else await SecureStore.deleteItemAsync(SESSION_KEY);if(hadToken){listeners.forEach(listener=>listener());changed.forEach(listener=>listener());}}
+export async function restoreNativeSession(){if(Platform.OS==='web'){try{token=window.sessionStorage.getItem(SESSION_KEY)||token;}catch{/* Private browsing can deny storage; keep the in-memory session. */}}else token=await SecureStore.getItemAsync(SESSION_KEY);return !!token;}
+export async function clearNativeSession(){const hadToken=!!token;token=null;if(Platform.OS==='web'){try{window.sessionStorage.removeItem(SESSION_KEY);}catch{}}else await SecureStore.deleteItemAsync(SESSION_KEY);if(hadToken){listeners.forEach(listener=>listener());changed.forEach(listener=>listener());}}
 export async function apiFetch(path:string,options:RequestInit={}){
+ const requestToken=token;
  const headers=new Headers(options.headers);
  for(const [key,value] of Object.entries(nativeAuthHeaders()))headers.set(key,value);
  if(Platform.OS!=='web'&&options.method&&options.method!=='GET')headers.set('Origin',API_URL);
  const response=await fetch(`${API_URL}${path}`,{...options,headers});
- if(response.status===401&&bearerSession)await clearNativeSession();
+ if(response.status===401&&bearerSession&&requestToken===token)await clearNativeSession();
  return response;
 }
 export async function checkNativeSession(){
@@ -36,6 +37,6 @@ export async function signInNative(code:string){
   const response=await fetch(`${API_URL}/api/mobile-session`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded',...(Platform.OS!=='web'?{Origin:API_URL}:{})},body:new URLSearchParams({code}).toString(),signal:controller.signal});
   const result=await response.json();
   if(!response.ok||typeof result.token!=='string')throw new Error(result.error||'Could not sign in. Please try again.');
-  if(Platform.OS==='web')window.sessionStorage.setItem(SESSION_KEY,result.token);else await SecureStore.setItemAsync(SESSION_KEY,result.token);token=result.token;changed.forEach(listener=>listener());
+  if(Platform.OS==='web'){try{window.sessionStorage.setItem(SESSION_KEY,result.token);}catch{/* Voice remains available for this tab. */}}else await SecureStore.setItemAsync(SESSION_KEY,result.token);token=result.token;changed.forEach(listener=>listener());
  }finally{clearTimeout(timeout);}
 }
