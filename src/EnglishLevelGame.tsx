@@ -1,3 +1,4 @@
+import type {ListeningExercise} from './listeningExercise';
 import ConversationStage from './ConversationStage';
 import {worldForLesson,worldsForArea,conversationCharacter} from './conversationWorlds';
 import {englishLevelProgress} from './englishLevelProgress';
@@ -16,7 +17,7 @@ import RewardEstimate from './RewardEstimate';
 import {stopEnglishAudio} from './englishAudio';
 import {theme} from './theme';
 type QuizState={selected:number|null;checked:boolean;select:(index:number)=>void;check:()=>void;retry:()=>void};
-type Props={unit:JourneyUnit;quiz:QuizState;listening:QuizState;voice:VoiceAssessment|null;onAssessment:(value:VoiceAssessment|null)=>void;finished:boolean;saving:boolean;rewardAdded:number;saveError:string;audioError:string;translated:boolean;toggleDari:()=>void;say:(text:string)=>void;onComplete:()=>void;onClose:()=>void};
+type Props={unit:JourneyUnit;listeningExercise:ListeningExercise;quiz:QuizState;listening:QuizState;voice:VoiceAssessment|null;onAssessment:(value:VoiceAssessment|null)=>void;finished:boolean;saving:boolean;rewardAdded:number;saveError:string;audioError:string;translated:boolean;toggleDari:()=>void;say:(text:string)=>void;onComplete:()=>void;onClose:()=>void};
 export default function EnglishLevelGame(p:Props){
  const {unit,quiz,listening,voice}=p,place=worldForLesson(unit.id)!;
  const insets=useSafeAreaInsets(),{height}=useWindowDimensions(),scroll=useRef<ScrollView>(null);
@@ -24,13 +25,13 @@ export default function EnglishLevelGame(p:Props){
  const social=unit.area==='social',displayPlace=social?{...place,npc:conversationCharacter(unit.id)}:place;
  const env=gameEnvironments[place.id];
  const level=placeMissions(place).findIndex(u=>u.id===unit.id)+1,world=worldsForArea(unit.area).findIndex(item=>item.id===place.id)+1;
- const {quizDone,listenDone,speakingPassed,nodes,next}=englishLevelProgress(unit,quiz,listening,voice,p.finished);
+ const {quizDone,listenDone,speakingPassed,nodes,next}=englishLevelProgress(unit,quiz,listening,voice,p.finished,p.listeningExercise.correct);
  const focus=useCallback((y:number)=>scroll.current?.scrollTo({y:Math.max(0,y-height*.26),animated:true}),[height]);
  const close=()=>{setActivity(null);void stopEnglishAudio();};
  useEffect(()=>{setActivity(null);setConversation(false);},[unit.id]);
  useEffect(()=>{if(p.finished)setActivity(null);},[p.finished]);
  const open=(id:string)=>{if(nodes.find(node=>node.id===id)?.ready){void stopEnglishAudio();setActivity(id);}};
- const choices=unit.choices.map((choice,i)=>i===unit.correct?{en:unit.phrase,dari:unit.phraseDari}:choice);
+ const choices=p.listeningExercise.choices;
  return <View style={[s.root,{backgroundColor:env.ground,paddingLeft:insets.left,paddingRight:insets.right}]}>
   <View style={[s.hud,{paddingTop:insets.top+8}]}><TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to world map" onPress={p.onClose} style={s.iconButton}><Ionicons name="close" size={24} color="white"/></TouchableOpacity><View style={{flex:1}}><Text style={s.kicker}>LEVEL {level} · {env.name.toUpperCase()}</Text><Text numberOfLines={2} style={s.levelTitle}>{unit.title}</Text></View><TouchableOpacity accessibilityRole="button" accessibilityLabel={p.translated?'Hide Afghan Dari':'Translate to Afghan Dari'} onPress={p.toggleDari} style={s.iconButton}><Ionicons name="language-outline" size={23} color="white"/></TouchableOpacity></View>
   <RewardEstimate compact area={unit.area} refreshKey={String(p.finished)}/>
@@ -45,13 +46,13 @@ export default function EnglishLevelGame(p:Props){
      <View style={social?{marginBottom:14}:s.prompt}><Text style={social?s.body:s.question}>{unit.prompt}</Text>{p.translated&&<Text style={s.dari}>{unit.promptDari}</Text>}{!social&&<TouchableOpacity accessibilityRole="button" onPress={()=>p.say(unit.prompt)} style={s.audio}><Ionicons name="volume-high" size={19} color={theme.green}/><Text style={s.audioText}>Listen to the situation</Text></TouchableOpacity>}</View>
      {unit.choices.map((choice,i)=><TouchableOpacity key={i} accessibilityRole="button" disabled={quiz.checked} onPress={()=>quiz.select(i)} style={[s.answer,quiz.selected===i&&s.selected,quiz.checked&&i===unit.correct&&s.correct]}><View style={s.letter}><Text style={s.letterText}>{String.fromCharCode(65+i)}</Text></View><View style={{flex:1}}><Text style={s.answerText}>{choice.en}</Text>{p.translated&&<Text style={s.dari}>{choice.dari}</Text>}</View></TouchableOpacity>)}
      {quiz.checked&&<View style={[s.feedback,!quizDone&&{backgroundColor:theme.peach}]}><Text style={s.feedbackTitle}>{quizDone?'Checkpoint cleared!':'Try this one again'}</Text><Text style={s.body}>{unit.explain}</Text>{p.translated&&<Text style={s.dari}>{unit.explainDari}</Text>}</View>}
-     <TouchableOpacity accessibilityRole="button" disabled={!quiz.checked&&quiz.selected===null} onPress={()=>!quiz.checked?quiz.check():quizDone?close():quiz.retry()} style={[s.action,!quiz.checked&&quiz.selected===null&&{opacity:.45}]}><Text style={s.actionText}>{!quiz.checked?'Check my reply':quizDone?'Continue to next checkpoint':'Try again'}</Text></TouchableOpacity>
+     <TouchableOpacity accessibilityRole="button" disabled={!quiz.checked&&quiz.selected===null} onPress={()=>!quiz.checked?quiz.check():quizDone?open('speak'):quiz.retry()} style={[s.action,!quiz.checked&&quiz.selected===null&&{opacity:.45}]}><Text style={s.actionText}>{!quiz.checked?'Check my reply':quizDone?'Continue to next checkpoint':'Try again'}</Text></TouchableOpacity>
     </>:activity==='listen'?<>
-     {social&&<ConversationStage unit={unit} translated={p.translated} mode="listen" replyReady={listenDone}/>}
-     {!social&&<View style={s.prompt}><Text style={s.question}>Which phrase do you hear?</Text>{p.translated&&<Text style={s.dari}>کدام جمله را می‌شنوید؟</Text>}<TouchableOpacity accessibilityRole="button" accessibilityLabel="Play the English listening phrase" onPress={()=>p.say(unit.phrase)} style={s.audio}><Ionicons name="volume-high" size={22} color={theme.green}/><Text style={s.audioText}>Play English phrase</Text></TouchableOpacity></View>}
-     {choices.map((choice,i)=><TouchableOpacity key={i} accessibilityRole="button" disabled={listening.checked} onPress={()=>listening.select(i)} style={[s.answer,listening.selected===i&&s.selected,listening.checked&&i===unit.correct&&s.correct]}><View style={{flex:1}}><Text style={s.answerText}>{choice.en}</Text>{p.translated&&<Text style={s.dari}>{choice.dari}</Text>}</View></TouchableOpacity>)}
+     {social&&<ConversationStage unit={unit} translated={p.translated} mode="listen" replyReady={listenDone} listeningReply={p.listeningExercise.phrase}/>}
+     {!social&&<View style={s.prompt}><Text style={s.question}>Which phrase do you hear?</Text>{p.translated&&<Text style={s.dari}>کدام جمله را می‌شنوید؟</Text>}<TouchableOpacity accessibilityRole="button" accessibilityLabel="Play the English listening phrase" onPress={()=>p.say(p.listeningExercise.phrase.en)} style={s.audio}><Ionicons name="volume-high" size={22} color={theme.green}/><Text style={s.audioText}>Play English phrase</Text></TouchableOpacity></View>}
+     {choices.map((choice,i)=><TouchableOpacity key={i} accessibilityRole="button" disabled={listening.checked} onPress={()=>listening.select(i)} style={[s.answer,listening.selected===i&&s.selected,listening.checked&&i===p.listeningExercise.correct&&s.correct]}><View style={{flex:1}}><Text style={s.answerText}>{choice.en}</Text>{p.translated&&<Text style={s.dari}>{choice.dari}</Text>}</View></TouchableOpacity>)}
      {listening.checked&&<Text style={s.body}>{listenDone?'Checkpoint cleared! You recognized the phrase.':'Listen again, then choose the matching phrase.'}</Text>}
-     <TouchableOpacity accessibilityRole="button" disabled={!listening.checked&&listening.selected===null} onPress={()=>!listening.checked?listening.check():listenDone?close():listening.retry()} style={[s.action,!listening.checked&&listening.selected===null&&{opacity:.45}]}><Text style={s.actionText}>{!listening.checked?'Check listening':listenDone?'Continue to next checkpoint':'Try listening again'}</Text></TouchableOpacity>
+     <TouchableOpacity accessibilityRole="button" disabled={!listening.checked&&listening.selected===null} onPress={()=>!listening.checked?listening.check():listenDone?open('choose'):listening.retry()} style={[s.action,!listening.checked&&listening.selected===null&&{opacity:.45}]}><Text style={s.actionText}>{!listening.checked?'Check listening':listenDone?'Continue to next checkpoint':'Try listening again'}</Text></TouchableOpacity>
     </>:activity==='speak'?<>
      {social&&<ConversationStage unit={unit} translated={p.translated} mode="speak" playerSpeaking={playerSpeaking}/>}
      {unit.dialogue&&<><TouchableOpacity accessibilityRole="button" disabled={playerSpeaking} onPress={()=>setConversation(value=>!value)} style={s.audio}><Ionicons name="chatbubbles-outline" size={21} color={theme.green}/><Text style={s.audioText}>{conversation?'Hide practice conversation':'Practice a short conversation first'}</Text></TouchableOpacity>{conversation&&!playerSpeaking&&<FamilyConversation unit={unit} translated={p.translated} onSpeak={p.say}/>}</>}

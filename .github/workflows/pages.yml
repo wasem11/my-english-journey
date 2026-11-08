@@ -24,6 +24,7 @@ jobs:
       - run: npm run check
       - run: node scripts/check-family-english.cjs
       - run: node scripts/check-conversations.cjs
+      - run: node scripts/check-english-game.cjs
       - run: node scripts/check-hosted.cjs
       - run: node scripts/check-native-session.cjs
       - run: node scripts/check-ava-routing.cjs

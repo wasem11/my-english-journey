@@ -1,3 +1,4 @@
+import {createListeningExercise} from '../src/listeningExercise';
 import {worldForLesson} from '../src/conversationWorlds';
 import EnglishLevelGame from '../src/EnglishLevelGame';
 import {placeForLesson} from '../src/neighborhood';
@@ -9,7 +10,7 @@ import { VoiceAssessment, lessonPassed, voicePassed, VOICE_PROGRESS_KEY } from '
 import FamilyConversation from '../src/FamilyConversation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDariPreference } from '../src/useDariPreference';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,12 +35,12 @@ export default function JourneyLesson() {
     const [rewardAdded, setRewardAdded] = useState(0);
     const saveLock = useRef(false);
     useEffect(() => { setVoice(null); setRewardAdded(0); setSaveError(''); setAudioError(''); setSelected(null); setChecked(false); setComplete(false); setListenSelected(null); setListeningChecked(false); return () => { void stopEnglishAudio(); }; }, [id]);
-    if (!unit)
+    const listeningExercise=useMemo(()=>unit?createListeningExercise(unit):null,[unit]);
+    if (!unit||!listeningExercise)
         return <View style={s.page}><Text>Lesson not found.</Text><TouchableOpacity onPress={() => router.back()}><Text>Back</Text></TouchableOpacity></View>;
     const say = (t: string) => { setAudioError(''); void speakEnglish(t).catch(error => setAudioError(error.message)); };
-    const listeningChoices = unit.choices.map((choice, i) => i === unit.correct ? { en: unit.phrase, dari: unit.phraseDari } : choice);
     async function finish() {
-        if (!unit || saveLock.current || !lessonPassed(checked && selected === unit.correct, listeningChecked && listenSelected === unit.correct, voice, unit.id, unit.phrase))
+        if (!unit || saveLock.current || !lessonPassed(checked && selected === unit.correct, listeningChecked && listenSelected === listeningExercise!.correct, voice, unit.id, unit.phrase))
             return;
         saveLock.current = true;
         setSaving(true);
@@ -71,6 +72,6 @@ export default function JourneyLesson() {
         }
     }
     const correct = selected === unit.correct;
-    return <EnglishLevelGame unit={unit} quiz={{selected,checked,select:setSelected,check:()=>setChecked(true),retry:()=>{setSelected(null);setChecked(false);}}} listening={{selected:listenSelected,checked:listeningChecked,select:setListenSelected,check:()=>setListeningChecked(true),retry:()=>{setListenSelected(null);setListeningChecked(false);}}} voice={voice} onAssessment={setVoice} finished={complete} saving={saving} rewardAdded={rewardAdded} saveError={saveError} audioError={audioError} translated={translate} toggleDari={toggleDari} say={say} onComplete={finish} onClose={()=>router.replace({pathname:unit.area==='social'?'/conversations':'/neighborhood',params:{place:worldForLesson(unit.id)?.id||'preschool'}})}/>;
+    return <EnglishLevelGame unit={unit} listeningExercise={listeningExercise} quiz={{selected,checked,select:setSelected,check:()=>setChecked(true),retry:()=>{setSelected(null);setChecked(false);}}} listening={{selected:listenSelected,checked:listeningChecked,select:setListenSelected,check:()=>setListeningChecked(true),retry:()=>{setListenSelected(null);setListeningChecked(false);}}} voice={voice} onAssessment={setVoice} finished={complete} saving={saving} rewardAdded={rewardAdded} saveError={saveError} audioError={audioError} translated={translate} toggleDari={toggleDari} say={say} onComplete={finish} onClose={()=>router.replace({pathname:unit.area==='social'?'/conversations':'/neighborhood',params:{place:worldForLesson(unit.id)?.id||'preschool'}})}/>;
 }
 const s=StyleSheet.create({page:{flex:1,backgroundColor:theme.paper,padding:20}});
