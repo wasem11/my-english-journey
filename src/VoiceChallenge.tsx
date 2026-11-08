@@ -3,7 +3,7 @@ import { theme } from './theme';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Audio } from 'expo-av';
-import { speakEnglish, stopEnglishAudio } from './englishAudio';
+import { speakEnglish, stopEnglishAudio, prepareEnglishRecording } from './englishAudio';
 import { JourneyUnit } from './journeyContent';
 import { parseVoiceAssessment, VoiceAssessment, VOICE_TARGET } from './voiceAssessment';
 import {apiFetch,onSessionChanged} from './nativeSession';
@@ -143,11 +143,11 @@ export default function VoiceChallenge({ unit, translated, onAssessment, onSpeak
             if (Platform.OS === 'web') {
                 const mimeType = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'].find(type => MediaRecorder.isTypeSupported(type));
                 options.web = { bitsPerSecond: 128000, ...(mimeType ? { mimeType } : {}) };
+                void prepareEnglishRecording();
                 current = new Audio.Recording();
                 // Prepare requests getUserMedia directly and preserves its real error.
                 // Start during the tap, without a separate permission probe/stream.
                 const preparation=current.prepareToRecordAsync(options);
-                void stopEnglishAudio();
                 await preparation;
             } else {
                 await stopEnglishAudio();

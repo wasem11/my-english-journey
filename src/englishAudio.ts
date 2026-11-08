@@ -32,8 +32,16 @@ function prepareWebAudio():Promise<AudioContext>{
  if(!context||context.state==='closed')context=new AudioContextClass();
  const current=context;
  const session=(navigator as unknown as {audioSession?:{type:string}}).audioSession;
- if(session){try{session.type='playback';}catch{/* Unsupported audio session setting. */}}
+ if(session){try{session.type='auto';}catch{/* Unsupported audio session setting. */}}
  return current.state==='running'?Promise.resolve(current):deadline(current.resume(),8000,'Your browser paused sound. Tap Listen again to enable it.').then(()=>current);
+}
+// Reset any playback-only category left by an earlier Listen before requesting capture.
+export function prepareEnglishRecording(){
+ if(Platform.OS==='web'&&typeof navigator!=='undefined'){
+  const session=(navigator as unknown as {audioSession?:{type:string}}).audioSession;
+  if(session){try{session.type='play-and-record';}catch{try{session.type='auto';}catch{/* Browser chooses its own category. */}}}
+ }
+ return stopEnglishAudio();
 }
 export async function stopEnglishAudio(){
  download?.abort();download=null;

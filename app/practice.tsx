@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
-import { speakEnglish, stopEnglishAudio } from '../src/englishAudio';
+import { speakEnglish, stopEnglishAudio, prepareEnglishRecording } from '../src/englishAudio';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { lessons, englishShare } from '../src/lessons';
 const API = process.env.EXPO_PUBLIC_API_URL || '';
@@ -35,7 +35,7 @@ export default function Practice() {
         return <Text>Lesson not found</Text>;
     async function start() {
         try {
-            await stopEnglishAudio();
+            await prepareEnglishRecording();
             if (!API) {
                 Alert.alert('AI setup needed', 'Set EXPO_PUBLIC_API_URL to your HTTPS backend before recording.');
                 return;
